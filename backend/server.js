@@ -36,6 +36,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 const PORT = process.env.PORT || 5001;
 
+// Health route (added)
+app.get('/', (req, res) => {
+  res.send('Nexa API Running');
+});
+
 // Socket.IO logic
 io.on('connection', (socket) => {
   // User joins their own room (for general notifications maybe) and conversation rooms
@@ -79,10 +84,6 @@ app.use('/api/search', searchRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/notifications', notificationRoutes);
-
-app.get('/', (req, res) => {
-  res.send('Nexa API Running');
-});
 
 // Basic Error Handler
 app.use((err, req, res, next) => {
