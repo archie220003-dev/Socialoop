@@ -18,7 +18,7 @@ const CreatePost = () => {
     // Fetch all communities the user has joined
     const fetchCommunities = async () => {
       try {
-        const res = await fetch('http://localhost:5001/api/communities');
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/communities`);
         const data = await res.json();
         const joined = data.filter(c => c.members?.some(m => 
           (typeof m === 'string' ? m : m._id) === user?._id
@@ -56,7 +56,7 @@ const CreatePost = () => {
     if (media) formData.append('media', media);
 
     try {
-      const res = await fetch('http://localhost:5001/api/posts', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`

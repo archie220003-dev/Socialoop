@@ -4,7 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import PostCard from '../components/PostCard';
 import { ArrowLeft } from 'lucide-react';
 
-const ENDPOINT = 'http://localhost:5001';
+const ENDPOINT = import.meta.env.VITE_API_URL;
 
 const PostDetail = () => {
   const { id } = useParams();

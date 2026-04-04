@@ -7,7 +7,7 @@ const RightSidebar = () => {
   const [communities, setCommunities] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:5001/api/communities')
+    fetch(`${import.meta.env.VITE_API_URL}/api/communities`)
       .then(res => res.json())
       .then(data => {
         // Show up to 3 suggested communities
@@ -29,7 +29,7 @@ const RightSidebar = () => {
               className="avatar"
               style={{
                 width: '64px', height: '64px', margin: '0 auto 12px', border: '3px solid var(--surface)',
-                background: user.avatarUrl ? `url(http://localhost:5001${user.avatarUrl}) center/cover` : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
+                background: user.avatarUrl ? `url(${import.meta.env.VITE_API_URL}${user.avatarUrl}) center/cover` : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
               }}
             ></div>
             <h4 style={{ fontWeight: 600, fontSize: '16px', margin: '0 0 4px 0' }}>{user.username}</h4>

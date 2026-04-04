@@ -12,7 +12,7 @@ const Saved = () => {
 
     const fetchSavedPosts = async () => {
         try {
-            const res = await fetch('http://localhost:5001/api/posts/saved', {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/saved`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
             const data = await res.json();
@@ -32,7 +32,7 @@ const Saved = () => {
 
     const handleVote = async (postId, type) => {
         try {
-            await fetch(`http://localhost:5001/api/posts/${postId}/${type}`, {
+            await fetch(`${import.meta.env.VITE_API_URL}/api/posts/${postId}/${type}`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });

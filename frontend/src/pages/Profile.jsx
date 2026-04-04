@@ -41,10 +41,10 @@ const Profile = () => {
     setLoading(true);
     try {
       const endpoint = tab === 'posts'
-        ? `http://localhost:5001/api/posts/user/${user._id}/posts`
+        ? `${import.meta.env.VITE_API_URL}/api/posts/user/${user._id}/posts`
         : tab === 'comments'
-          ? `http://localhost:5001/api/posts/user/${user._id}/comments`
-          : `http://localhost:5001/api/posts/user/${user._id}/reposts`;
+          ? `${import.meta.env.VITE_API_URL}/api/posts/user/${user._id}/comments`
+          : `${import.meta.env.VITE_API_URL}/api/posts/user/${user._id}/reposts`;
 
       const res = await fetch(endpoint);
       const data = await res.json();
@@ -78,7 +78,7 @@ const Profile = () => {
     }
 
     try {
-      const res = await fetch('http://localhost:5001/api/auth/profile', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -101,7 +101,7 @@ const Profile = () => {
 
   const handleVote = async (postId, type) => {
     try {
-      await fetch(`http://localhost:5001/api/posts/${postId}/${type}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/posts/${postId}/${type}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -121,7 +121,7 @@ const Profile = () => {
   const avatarBg = avatarPreview
     ? `url(${avatarPreview}) center/cover`
     : user.avatarUrl
-      ? `url(http://localhost:5001${user.avatarUrl}) center/cover`
+      ? `url(${import.meta.env.VITE_API_URL}${user.avatarUrl}) center/cover`
       : 'linear-gradient(135deg, #007AFF, #5AC8FA)';
 
   return (

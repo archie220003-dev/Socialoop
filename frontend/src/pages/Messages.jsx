@@ -4,7 +4,7 @@ import io from 'socket.io-client';
 import { Send, Image as ImageIcon, X, ArrowLeft, Search, UserCircle2, Trash2, MessageSquare, Loader2 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-const ENDPOINT = 'http://localhost:5001';
+const ENDPOINT = import.meta.env.VITE_API_URL;
 var socket;
 
 const Messages = () => {

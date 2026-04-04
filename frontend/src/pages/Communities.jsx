@@ -45,7 +45,7 @@ const CommunityCard = ({ c, i, user, handleJoin }) => {
         {/* Avatar */}
         <div className="community-avatar" style={{ transform: 'translateZ(20px)' }}>
           {c.avatarUrl ? (
-            <img src={`http://localhost:5001${c.avatarUrl}`} alt={c.name} />
+            <img src={`${import.meta.env.VITE_API_URL}${c.avatarUrl}`} alt={c.name} />
           ) : (
             c.name.charAt(0).toUpperCase()
           )}
@@ -110,7 +110,7 @@ const Communities = () => {
 
   const fetchCommunities = async () => {
     try {
-      const res = await fetch('http://localhost:5001/api/communities');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/communities`);
       const data = await res.json();
       setCommunities(data);
     } catch (error) {
@@ -126,7 +126,7 @@ const Communities = () => {
     e.preventDefault();
     if (!name.trim()) return;
     try {
-      const res = await fetch('http://localhost:5001/api/communities', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/communities`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -149,7 +149,7 @@ const Communities = () => {
     e.stopPropagation();
     e.preventDefault();
     try {
-      await fetch(`http://localhost:5001/api/communities/${id}/join`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/communities/${id}/join`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`

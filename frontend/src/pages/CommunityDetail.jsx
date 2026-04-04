@@ -18,8 +18,8 @@ const CommunityDetail = () => {
   const fetchCommunityData = async () => {
     try {
       const [commRes, postsRes] = await Promise.all([
-        fetch(`http://localhost:5001/api/communities/${id}`),
-        fetch(`http://localhost:5001/api/communities/${id}/posts`)
+        fetch(`${import.meta.env.VITE_API_URL}/api/communities/${id}`),
+        fetch(`${import.meta.env.VITE_API_URL}/api/communities/${id}/posts`)
       ]);
       const commData = await commRes.json();
       const postsData = await postsRes.json();
@@ -46,7 +46,7 @@ const CommunityDetail = () => {
 
   const handleJoin = async () => {
     try {
-      await fetch(`http://localhost:5001/api/communities/${id}/join`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/communities/${id}/join`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -59,7 +59,7 @@ const CommunityDetail = () => {
   const handleLeave = async () => {
     if (!confirm('Are you sure you want to leave this community?')) return;
     try {
-      await fetch(`http://localhost:5001/api/communities/${id}/leave`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/communities/${id}/leave`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -75,7 +75,7 @@ const CommunityDetail = () => {
     const formData = new FormData();
     formData.append('avatar', file);
     try {
-      await fetch(`http://localhost:5001/api/communities/${id}/avatar`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/communities/${id}/avatar`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: formData
@@ -88,7 +88,7 @@ const CommunityDetail = () => {
 
   const handleUpdateDesc = async () => {
     try {
-      await fetch(`http://localhost:5001/api/communities/${id}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/communities/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ const CommunityDetail = () => {
   const handleRemoveMember = async (memberId) => {
     if (!confirm('Remove this member from the community?')) return;
     try {
-      await fetch(`http://localhost:5001/api/communities/${id}/members/${memberId}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/communities/${id}/members/${memberId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -118,7 +118,7 @@ const CommunityDetail = () => {
 
   const handleUpvote = async (postId) => {
     try {
-      await fetch(`http://localhost:5001/api/posts/${postId}/upvote`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/posts/${postId}/upvote`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -127,7 +127,7 @@ const CommunityDetail = () => {
 
   const handleDownvote = async (postId) => {
     try {
-      await fetch(`http://localhost:5001/api/posts/${postId}/downvote`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/posts/${postId}/downvote`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -169,7 +169,7 @@ const CommunityDetail = () => {
             style={{ cursor: isOwner ? 'pointer' : 'default' }}
           >
             {community.avatarUrl ? (
-              <img src={`http://localhost:5001${community.avatarUrl}`} alt={community.name} />
+              <img src={`${import.meta.env.VITE_API_URL}${community.avatarUrl}`} alt={community.name} />
             ) : (
               community.name.charAt(0).toUpperCase()
             )}
@@ -331,7 +331,7 @@ const CommunityDetail = () => {
                   <Link to={`/user/${memberId}`} style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', color: 'inherit', flex: 1 }}>
                     <div className="member-avatar">
                       {memberAvatar ? (
-                        <img src={`http://localhost:5001${memberAvatar}`} alt={memberName} />
+                        <img src={`${import.meta.env.VITE_API_URL}${memberAvatar}`} alt={memberName} />
                       ) : null}
                     </div>
                     <div style={{ flex: 1 }}>

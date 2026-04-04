@@ -81,7 +81,7 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
     if (!user) return alert('Please log in to save posts');
 
     try {
-      const res = await fetch(`http://localhost:5001/api/posts/${post._id}/save`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/${post._id}/save`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -96,7 +96,7 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
 
   const fetchComments = async () => {
     try {
-      const res = await fetch(`http://localhost:5001/api/posts/${post._id}/comments`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/${post._id}/comments`);
       const data = await res.json();
       setComments(data);
     } catch (err) {
@@ -124,7 +124,7 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
     if (!textToSubmit.trim()) return;
 
     try {
-      const res = await fetch(`http://localhost:5001/api/posts/${post._id}/comments`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/${post._id}/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -144,7 +144,7 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
 
   const handleLikeToggle = async (commentId) => {
     try {
-      const res = await fetch(`http://localhost:5001/api/posts/comments/${commentId}/like`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/comments/${commentId}/like`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -166,7 +166,7 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
   const executeDeletePost = async (e) => {
     e.stopPropagation();
     try {
-      const res = await fetch(`http://localhost:5001/api/posts/${post._id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/${post._id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -185,7 +185,7 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
 
   const handleDeleteComment = async (commentId) => {
     try {
-      const res = await fetch(`http://localhost:5001/api/posts/comments/${commentId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/comments/${commentId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -223,7 +223,7 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
           >
             <div style={{
               width: '20px', height: '20px', borderRadius: '50%',
-              background: repostedBy.avatarUrl ? `url(http://localhost:5001${repostedBy.avatarUrl}) center/cover` : 'var(--primary)'
+              background: repostedBy.avatarUrl ? `url(${import.meta.env.VITE_API_URL}${repostedBy.avatarUrl}) center/cover` : 'var(--primary)'
             }}></div>
             <span>{repostedBy._id === currentUserId ? 'You' : repostedBy.username}</span>
           </div>
@@ -239,7 +239,7 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
       )}
       <div className="post-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div onClick={goToProfile} style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-          <div className="avatar" style={{ background: post.author?.avatarUrl ? `url(http://localhost:5001${post.author.avatarUrl}) center/cover` : 'linear-gradient(135deg, #007AFF, #5AC8FA)' }}></div>
+          <div className="avatar" style={{ background: post.author?.avatarUrl ? `url(${import.meta.env.VITE_API_URL}${post.author.avatarUrl}) center/cover` : 'linear-gradient(135deg, #007AFF, #5AC8FA)' }}></div>
           <div className="author-info">
             <h4 style={{ margin: 0, fontSize: '15px' }}>{post.author?.username || 'Unknown'}</h4>
             <p style={{ margin: 0, marginTop: '2px', fontSize: '13px' }}>
@@ -311,7 +311,7 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
 
       {post.mediaUrl && (
         <img
-          src={`http://localhost:5001${post.mediaUrl}`}
+          src={`${import.meta.env.VITE_API_URL}${post.mediaUrl}`}
           alt="Post content"
           className="post-image"
           onClick={(e) => {
@@ -346,7 +346,7 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
           onClick={(e) => {
             e.stopPropagation();
             if (!user) return alert('Please log in to repost');
-            fetch(`http://localhost:5001/api/posts/${post._id}/repost`, {
+            fetch(`${import.meta.env.VITE_API_URL}/api/posts/${post._id}/repost`, {
               method: 'POST',
               headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             })
@@ -418,7 +418,7 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
       {/* Truly Fullscreen Portal */}
       {isFullScreen && (
         <FullScreenPortal
-          src={`http://localhost:5001${post.mediaUrl}`}
+          src={`${import.meta.env.VITE_API_URL}${post.mediaUrl}`}
           onClose={() => setIsFullScreen(false)}
         />
       )}

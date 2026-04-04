@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
       if (storedUser) setUser(JSON.parse(storedUser));
 
       // Fetch latest
-      fetch('http://localhost:5001/api/auth/profile', {
+      fetch(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
         .then(res => res.json())

@@ -7,7 +7,7 @@ import io from 'socket.io-client';
 import logoBlack from '../assets/logo-black.png';
 import logoWhite from '../assets/logo-white.png';
 
-const ENDPOINT = 'http://localhost:5001';
+const ENDPOINT = import.meta.env.VITE_API_URL;
 var socket;
 
 const TopNavbar = () => {
@@ -57,7 +57,7 @@ const TopNavbar = () => {
     if (user && !isAnonymous) {
       const fetchNotifications = async () => {
         try {
-          const res = await fetch('http://localhost:5001/api/notifications', {
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications`, {
             headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
           });
           if(res.ok) {
@@ -87,7 +87,7 @@ const TopNavbar = () => {
     if (searchQuery.length > 0) {
       const fetchSearch = async () => {
         try {
-          const res = await fetch(`http://localhost:5001/api/search?q=${searchQuery}`, {
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/search?q=${searchQuery}`, {
             headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
           });
           const data = await res.json();
@@ -108,7 +108,7 @@ const TopNavbar = () => {
   const handleNotificationClick = async (notification) => {
     try {
       // Mark as read
-      await fetch(`http://localhost:5001/api/notifications/${notification._id}/read`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/${notification._id}/read`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
@@ -240,7 +240,7 @@ const TopNavbar = () => {
                   navigate(result.type === 'community' ? `/community/${result.id}` : `/user/${result.id}`);
                   setShowSearchDropdown(false);
                 }} style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', transition: 'background 0.2s' }} className="search-result-item">
-                  <div className="avatar" style={{ width: '32px', height: '32px', backgroundImage: `url(http://localhost:5001${result.avatarUrl || result.coverUrl})` }}></div>
+                  <div className="avatar" style={{ width: '32px', height: '32px', backgroundImage: `url(${import.meta.env.VITE_API_URL}${result.avatarUrl || result.coverUrl})` }}></div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 600, fontSize: '14px' }}>{result.title}</div>
                     <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{result.type}</div>
@@ -336,7 +336,7 @@ const TopNavbar = () => {
                     <h3 style={{ margin: 0, fontWeight: 700, fontSize: '16px' }}>Notifications</h3>
                     {unreadCount > 0 && (
                       <button className="button-ghost" style={{ fontSize: '12px', padding: '4px 10px', borderRadius: '8px', color: 'var(--primary)' }} onClick={async () => {
-                        await fetch('http://localhost:5001/api/notifications/read-all', { method: 'PUT', headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
+                        await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/read-all`, { method: 'PUT', headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
                         setNotifications(notifications.map(n => ({...n, isRead: true})));
                         setUnreadCount(0);
                       }}>Mark all read</button>
@@ -363,7 +363,7 @@ const TopNavbar = () => {
                             animationDelay: `${idx * 0.03}s`
                           }}
                         >
-                          <div className="avatar" style={{ width: '36px', height: '36px', backgroundImage: notif.sender?.avatarUrl ? `url(http://localhost:5001${notif.sender.avatarUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)', flexShrink: 0, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                          <div className="avatar" style={{ width: '36px', height: '36px', backgroundImage: notif.sender?.avatarUrl ? `url(${import.meta.env.VITE_API_URL}${notif.sender.avatarUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)', flexShrink: 0, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
                           <div style={{ fontSize: '13px', lineHeight: '1.4', flex: 1 }}>
                             <span style={{ fontWeight: 600 }}>{notif.sender?.username}</span> {getNotificationText(notif.type)}
                             {notif.post?.title && (

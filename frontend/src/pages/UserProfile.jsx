@@ -33,7 +33,7 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch(`http://localhost:5001/api/users/${id}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}`);
         const data = await res.json();
 
         if (res.ok || data.user) {
@@ -68,10 +68,10 @@ const UserProfile = () => {
     setContentLoading(true);
     try {
       const endpoint = tab === 'posts'
-        ? `http://localhost:5001/api/posts/user/${id}/posts`
+        ? `${import.meta.env.VITE_API_URL}/api/posts/user/${id}/posts`
         : tab === 'comments'
-          ? `http://localhost:5001/api/posts/user/${id}/comments`
-          : `http://localhost:5001/api/posts/user/${id}/reposts`;
+          ? `${import.meta.env.VITE_API_URL}/api/posts/user/${id}/comments`
+          : `${import.meta.env.VITE_API_URL}/api/posts/user/${id}/reposts`;
 
       const res = await fetch(endpoint);
       const data = await res.json();
@@ -93,7 +93,7 @@ const UserProfile = () => {
     }
 
     try {
-      const res = await fetch(`http://localhost:5001/api/users/${id}/follow`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}/follow`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -118,7 +118,7 @@ const UserProfile = () => {
 
   const handleVote = async (postId, type) => {
     try {
-      await fetch(`http://localhost:5001/api/posts/${postId}/${type}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/posts/${postId}/${type}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -166,7 +166,7 @@ const UserProfile = () => {
               className="avatar"
               style={{
                 width: '100px', height: '100px', border: '4px solid var(--surface)',
-                background: targetUser.avatarUrl ? `url(http://localhost:5001${targetUser.avatarUrl}) center/cover` : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
+                background: targetUser.avatarUrl ? `url(${import.meta.env.VITE_API_URL}${targetUser.avatarUrl}) center/cover` : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
               }}
             ></div>
 

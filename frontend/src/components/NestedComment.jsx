@@ -29,7 +29,7 @@ const NestedComment = ({ comment, allComments, onReplySubmit, onLikeToggle, onDe
 
   return (
     <div style={{ display: 'flex', gap: '12px', marginBottom: '12px', paddingLeft: '8px', borderLeft: '2px solid rgba(var(--surface-border-rgb), 0.1)' }}>
-      <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: comment.author?.avatarUrl ? `url(http://localhost:5001${comment.author.avatarUrl}) center/cover` : 'linear-gradient(135deg, #007AFF, #5AC8FA)', flexShrink: 0 }}></div>
+      <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: comment.author?.avatarUrl ? `url(${import.meta.env.VITE_API_URL}${comment.author.avatarUrl}) center/cover` : 'linear-gradient(135deg, #007AFF, #5AC8FA)', flexShrink: 0 }}></div>
       <div style={{ flex: 1 }}>
         <div style={{ background: 'var(--surface)', padding: '10px 14px', borderRadius: '12px', border: '1px solid var(--surface-border)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
