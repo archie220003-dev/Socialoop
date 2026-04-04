@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Socialoop</title>
+    <script>
+      (function() {
+        try {
+          var localTheme = localStorage.getItem('theme') || 'light';
+          var sysTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var activeTheme = localTheme;
+          if (localTheme === 'system') {
+            activeTheme = sysTheme ? 'dark' : 'light';
+          }
+          if (activeTheme === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+            window.addEventListener('DOMContentLoaded', () => document.body.classList.add('dark-mode'));
+          } else {
+            document.documentElement.classList.remove('dark-mode');
+            window.addEventListener('DOMContentLoaded', () => document.body.classList.remove('dark-mode'));
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
