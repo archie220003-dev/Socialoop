@@ -1,7 +1,7 @@
 import express from 'express';
 import { createCommunity, getCommunities, getCommunityById, getCommunityPosts, joinCommunity, leaveCommunity, updateCommunityAvatar, updateCommunity, removeMember } from '../controllers/communityController.js';
 import { auth } from '../middleware/auth.js';
-import { upload } from '../middleware/upload.js';
+import upload from '../middleware/multer.js';
 
 const router = express.Router();
 

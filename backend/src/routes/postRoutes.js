@@ -20,7 +20,7 @@ import {
     deleteComment
 } from '../controllers/postController.js';
 import { auth } from '../middleware/auth.js';
-import { upload } from '../middleware/upload.js';
+import upload from '../middleware/multer.js';
 
 const router = express.Router();
 

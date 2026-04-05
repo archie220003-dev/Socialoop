@@ -2,6 +2,7 @@ import cloudinary from '../../cloudinary.js';
 import Post, { Comment } from '../models/Post.js';
 import Notification from '../models/Notification.js';
 import User from '../models/User.js';
+import streamifier from 'streamifier';
 
 export const getPostById = async (req, res) => {
   try {
@@ -28,8 +29,17 @@ export const createPost = async (req, res) => {
   try {
     const { title, body, community } = req.body;
     let mediaUrl = null;
-    if (req.file && req.file.path) {
-      const result = await cloudinary.uploader.upload(req.file.path);
+    if (req.file) {
+      const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'posts' },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        streamifier.createReadStream(req.file.buffer).pipe(stream);
+      });
       mediaUrl = result.secure_url;
     }
 

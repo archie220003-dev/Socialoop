@@ -1,6 +1,6 @@
 import express from 'express';
 import { auth } from '../middleware/auth.js';
-import { upload } from '../middleware/upload.js';
+import upload from '../middleware/multer.js';
 import { getConversations, getMessages, sendMessage, getOrCreateConversation, deleteConversation, getUnreadCount } from '../controllers/messageController.js';
 
 const router = express.Router();

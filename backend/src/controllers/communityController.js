@@ -2,6 +2,7 @@ import Community from '../models/Community.js';
 import User from '../models/User.js';
 import Post from '../models/Post.js';
 import cloudinary from '../../cloudinary.js';
+import streamifier from 'streamifier';
 
 export const createCommunity = async (req, res) => {
   try {
@@ -116,8 +117,17 @@ export const updateCommunityAvatar = async (req, res) => {
       return res.status(403).send({ error: 'Only the community owner can update the avatar' });
     }
 
-    if (req.file && req.file.path) {
-      const result = await cloudinary.uploader.upload(req.file.path);
+    if (req.file) {
+      const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'communities' },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        streamifier.createReadStream(req.file.buffer).pipe(stream);
+      });
       community.avatarUrl = result.secure_url;
       await community.save();
     }

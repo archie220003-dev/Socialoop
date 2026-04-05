@@ -1,6 +1,7 @@
 import { Conversation, Message } from '../models/Message.js';
 import User from '../models/User.js';
 import cloudinary from '../../cloudinary.js';
+import streamifier from 'streamifier';
 
 // Helper: Deduplicate conversations for a user
 // Merges messages from duplicate conversations into one and deletes extras
@@ -134,8 +135,17 @@ export const sendMessage = async (req, res) => {
     const { text } = req.body;
     let mediaUrl = null;
 
-    if (req.file && req.file.path) {
-      const result = await cloudinary.uploader.upload(req.file.path);
+    if (req.file) {
+      const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'messages' },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        streamifier.createReadStream(req.file.buffer).pipe(stream);
+      });
       mediaUrl = result.secure_url;
     }
 

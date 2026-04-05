@@ -1,3 +1,4 @@
+import streamifier from 'streamifier';
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
@@ -105,15 +106,21 @@ export const updateProfile = async (req, res) => {
 
     if (bio !== undefined) user.bio = bio;
 
-    if (req.file && !req.file.path) {
-      return res.status(400).send({ error: "File upload failed - no path" });
-    }
+    if (req.file) {
+      const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "avatars" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
 
-    if (req.file && req.file.path) {
-      const result = await cloudinary.uploader.upload(req.file.path);
+        streamifier.createReadStream(req.file.buffer).pipe(stream);
+      });
+
       user.avatarUrl = result.secure_url;
     }
-
     await user.save();
 
     res.send({
