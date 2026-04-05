@@ -28,7 +28,7 @@ export const createPost = async (req, res) => {
   try {
     const { title, body, community } = req.body;
     let mediaUrl = null;
-    if (req.file) {
+    if (req.file && req.file.path) {
       const result = await cloudinary.uploader.upload(req.file.path);
       mediaUrl = result.secure_url;
     }

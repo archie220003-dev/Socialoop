@@ -116,7 +116,7 @@ export const updateCommunityAvatar = async (req, res) => {
       return res.status(403).send({ error: 'Only the community owner can update the avatar' });
     }
 
-    if (req.file) {
+    if (req.file && req.file.path) {
       const result = await cloudinary.uploader.upload(req.file.path);
       community.avatarUrl = result.secure_url;
       await community.save();

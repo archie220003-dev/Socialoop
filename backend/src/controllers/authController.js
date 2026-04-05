@@ -87,34 +87,51 @@ export const getProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
+    console.log("REQ.USER:", req.user);
+    console.log("REQ.FILE:", req.file);
+    console.log("REQ.BODY:", req.body);
+
     const { bio } = req.body;
+
+    if (!req.user || !req.user._id) {
+      return res.status(401).send({ error: "Unauthorized - req.user missing" });
+    }
+
     const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).send({ error: 'User not found' });
+
+    if (!user) {
+      return res.status(404).send({ error: "User not found" });
+    }
 
     if (bio !== undefined) user.bio = bio;
-    if (req.file) {
+
+    if (req.file && !req.file.path) {
+      return res.status(400).send({ error: "File upload failed - no path" });
+    }
+
+    if (req.file && req.file.path) {
       const result = await cloudinary.uploader.upload(req.file.path);
       user.avatarUrl = result.secure_url;
     }
 
     await user.save();
+
     res.send({
       user: {
         _id: user._id,
         username: user.username,
         email: user.email,
         bio: user.bio,
-        avatarUrl: user.avatarUrl,
-        role: user.role,
-        isBanned: user.isBanned
+        avatarUrl: user.avatarUrl
       }
     });
+
   } catch (error) {
-    console.log("UPDATE_PROFILE_REQ_USER:", req.user);
-    console.log("UPDATE_PROFILE_REQ_FILE:", req.file);
-    console.log("UPDATE_PROFILE_REQ_BODY:", req.body);
-    console.error("FULL ERROR (updateProfile):", error);
-    console.error("STACK:", error.stack);
-    res.status(500).send({ error: error.message });
+    console.error("UPDATE PROFILE FULL ERROR:", error);
+    console.error("STACK:", error?.stack);
+
+    res.status(500).send({
+      error: error?.message || "UNKNOWN_ERROR"
+    });
   }
 };
