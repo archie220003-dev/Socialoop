@@ -337,13 +337,13 @@ const Messages = () => {
                             style={{ borderBottom: 'none', margin: '2px 0', borderRadius: '12px', padding: '10px 12px' }}
                           >
                             <div className="avatar" style={{
-                              backgroundImage: other.avatarUrl && other.avatarUrl.startsWith("http") ? `url(${other.avatarUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+                              backgroundImage: other.avatar && other.avatar.startsWith("http") ? `url(${other.avatar})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)',
                               width: '40px', height: '40px', backgroundSize: 'cover', backgroundPosition: 'center'
                             }}></div>
                             <div className="conversation-info">
                               <h4 style={{ fontWeight: 600, fontSize: '14px' }}>{other.username}</h4>
                               <p style={{ color: 'var(--text-muted)', fontSize: '12px' }}>
-                                {conv.lastMessage?.text || (conv.lastMessage?.mediaUrl ? '🖼️ Photo' : 'No messages yet')}
+                                {conv.lastMessage?.text || (conv.lastMessage?.image ? '🖼️ Photo' : 'No messages yet')}
                               </p>
                             </div>
                             <MessageSquare size={16} color="var(--primary)" style={{ flexShrink: 0, opacity: 0.6 }} />
@@ -375,7 +375,7 @@ const Messages = () => {
                               style={{ padding: '10px 12px', borderRadius: '12px', marginBottom: '2px', borderBottom: 'none', cursor: 'pointer', transition: 'background 0.2s' }}
                             >
                               <div className="avatar" style={{
-                                backgroundImage: su.avatarUrl && su.avatarUrl.startsWith("http") ? `url(${su.avatarUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+                                backgroundImage: su.avatar && su.avatar.startsWith("http") ? `url(${su.avatar})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)',
                                 width: '40px', height: '40px', backgroundSize: 'cover', backgroundPosition: 'center'
                               }}></div>
                               <div className="conversation-info">
@@ -436,7 +436,7 @@ const Messages = () => {
                     }}
                   >
                     <div className="avatar" style={{
-                      backgroundImage: other.avatarUrl && other.avatarUrl.startsWith("http") ? `url(${other.avatarUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+                      backgroundImage: other.avatar && other.avatar.startsWith("http") ? `url(${other.avatar})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)',
                       width: '48px', height: '48px', backgroundSize: 'cover', backgroundPosition: 'center'
                     }}>
                       {isUnread && (
@@ -459,7 +459,7 @@ const Messages = () => {
                         color: isUnread ? 'white' : (isActive ? 'var(--text-main)' : 'var(--text-muted)'),
                         fontWeight: isUnread ? 700 : 400
                       }}>
-                        {conv.lastMessage?.text || (conv.lastMessage?.mediaUrl ? '🖼️ Photo' : 'No messages yet')}
+                        {conv.lastMessage?.text || (conv.lastMessage?.image ? '🖼️ Photo' : 'No messages yet')}
                       </p>
                     </div>
                   </div>
@@ -510,7 +510,7 @@ const Messages = () => {
                     >
                       <div className="avatar" style={{
                         width: '44px', height: '44px',
-                        backgroundImage: other?.avatarUrl && other.avatarUrl.startsWith("http") ? `url(${other.avatarUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+                        backgroundImage: other?.avatar && other.avatar.startsWith("http") ? `url(${other.avatar})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)',
                         boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                         backgroundSize: 'cover', backgroundPosition: 'center'
                       }}></div>
@@ -540,13 +540,13 @@ const Messages = () => {
                   <div key={msg._id || i} className={`message-bubble-wrapper ${isMe ? 'message-mine' : 'message-theirs'}`}>
                     {!isMe && (
                       <div className="avatar message-avatar" style={{
-                        backgroundImage: msg.sender?.avatarUrl && msg.sender.avatarUrl.startsWith("http") ? `url(${msg.sender.avatarUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)',
+                        backgroundImage: msg.sender?.avatar && msg.sender.avatar.startsWith("http") ? `url(${msg.sender.avatar})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)',
                         backgroundSize: 'cover', backgroundPosition: 'center'
                       }}></div>
                     )}
                     <div className="message-content">
-                      {msg.mediaUrl && (
-                        <img src={msg.mediaUrl} alt="Sent media" className="message-media" />
+                      {msg.image && (
+                        <img src={msg.image} alt="Sent media" className="message-media" />
                       )}
                       {msg.text && (
                         <div className="message-bubble">

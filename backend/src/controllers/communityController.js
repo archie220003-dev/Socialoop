@@ -1,8 +1,7 @@
 import Community from '../models/Community.js';
 import User from '../models/User.js';
 import Post from '../models/Post.js';
-import cloudinary from '../../cloudinary.js';
-import streamifier from 'streamifier';
+import { uploadToCloudinary } from '../utils/cloudinaryHelper.js';
 
 export const createCommunity = async (req, res) => {
   try {
@@ -32,7 +31,7 @@ export const getCommunities = async (req, res) => {
   try {
     const communities = await Community.find()
       .populate('owner', 'username')
-      .populate('members', 'username avatarUrl');
+      .populate('members', 'username avatar');
     res.send(communities);
   } catch (error) {
     console.error("FULL ERROR (getCommunities):", error);
@@ -44,8 +43,8 @@ export const getCommunities = async (req, res) => {
 export const getCommunityById = async (req, res) => {
   try {
     const community = await Community.findById(req.params.id)
-      .populate('owner', 'username avatarUrl')
-      .populate('members', 'username avatarUrl');
+      .populate('owner', 'username avatar')
+      .populate('members', 'username avatar');
     if (!community) return res.status(404).send({ error: 'Community not found' });
     res.send(community);
   } catch (error) {
@@ -72,8 +71,8 @@ export const joinCommunity = async (req, res) => {
     }
 
     const populated = await Community.findById(community._id)
-      .populate('owner', 'username avatarUrl')
-      .populate('members', 'username avatarUrl');
+      .populate('owner', 'username avatar')
+      .populate('members', 'username avatar');
     res.send(populated);
   } catch (error) {
     console.error("FULL ERROR (joinCommunity):", error);
@@ -118,26 +117,16 @@ export const updateCommunityAvatar = async (req, res) => {
     }
 
     if (req.file) {
-      const result = await new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: 'communities' },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        );
-        streamifier.createReadStream(req.file.buffer).pipe(stream);
-      });
-
+      const result = await uploadToCloudinary(req.file.buffer, 'communities');
       console.log("CLOUDINARY RESULT:", result);
-      community.avatarUrl = result.secure_url;
+      community.avatar = result.secure_url;
       await community.save();
-      console.log("SAVED COMMUNITY:", community.avatarUrl);
+      console.log("SAVED COMMUNITY:", community.avatar);
     }
 
     const populated = await Community.findById(community._id)
-      .populate('owner', 'username avatarUrl')
-      .populate('members', 'username avatarUrl');
+      .populate('owner', 'username avatar')
+      .populate('members', 'username avatar');
 
     return res.send(populated);
   } catch (error) {
@@ -164,8 +153,8 @@ export const updateCommunity = async (req, res) => {
     await community.save();
 
     const populated = await Community.findById(community._id)
-      .populate('owner', 'username avatarUrl')
-      .populate('members', 'username avatarUrl');
+      .populate('owner', 'username avatar')
+      .populate('members', 'username avatar');
     res.send(populated);
   } catch (error) {
     console.error("FULL ERROR (updateCommunity):", error);
@@ -199,8 +188,8 @@ export const removeMember = async (req, res) => {
     }
 
     const populated = await Community.findById(community._id)
-      .populate('owner', 'username avatarUrl')
-      .populate('members', 'username avatarUrl');
+      .populate('owner', 'username avatar')
+      .populate('members', 'username avatar');
     res.send(populated);
   } catch (error) {
     console.error("FULL ERROR (removeMember):", error);
@@ -212,7 +201,7 @@ export const removeMember = async (req, res) => {
 export const getCommunityPosts = async (req, res) => {
   try {
     const posts = await Post.find({ community: req.params.id })
-      .populate('author', 'username avatarUrl')
+      .populate('author', 'username avatar')
       .populate('community', 'name')
       .sort({ createdAt: -1 });
     res.send(posts);

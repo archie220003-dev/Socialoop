@@ -31,8 +31,8 @@ const NestedComment = ({ comment, allComments, onReplySubmit, onLikeToggle, onDe
     <div style={{ display: 'flex', gap: '12px', marginBottom: '12px', paddingLeft: '8px', borderLeft: '2px solid rgba(var(--surface-border-rgb), 0.1)' }}>
       <div style={{ 
         width: '28px', height: '28px', borderRadius: '50%', 
-        background: comment.author?.avatarUrl 
-          ? (comment.author.avatarUrl.startsWith("http") ? `url(${comment.author.avatarUrl}) center/cover` : `url(${import.meta.env.VITE_API_URL}${comment.author.avatarUrl}) center/cover`)
+        background: comment.author?.avatar 
+          ? `url(${comment.author.avatar}) center/cover`
           : 'linear-gradient(135deg, #007AFF, #5AC8FA)', 
         flexShrink: 0 
       }}></div>

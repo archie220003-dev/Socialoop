@@ -1,10 +1,9 @@
 import Notification from '../models/Notification.js';
-import cloudinary from '../../cloudinary.js';
 
 export const getNotifications = async (req, res) => {
   try {
     const notifications = await Notification.find({ recipient: req.user._id })
-      .populate('sender', 'username avatarUrl')
+      .populate('sender', 'username avatar')
       .populate('post', 'title') // just so we can show snippet maybe
       .sort({ createdAt: -1 })
       .limit(30);

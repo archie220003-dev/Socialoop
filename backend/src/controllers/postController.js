@@ -1,13 +1,13 @@
-import cloudinary from '../../cloudinary.js';
 import Post, { Comment } from '../models/Post.js';
 import Notification from '../models/Notification.js';
 import User from '../models/User.js';
-import streamifier from 'streamifier';
+import { uploadToCloudinary } from '../utils/cloudinaryHelper.js';
+// ... rest of imports ...
 
 export const getPostById = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id)
-      .populate('author', 'username avatarUrl')
+      .populate('author', 'username avatar')
       .populate('community', 'name')
       .lean();
 
@@ -28,20 +28,11 @@ export const getPostById = async (req, res) => {
 export const createPost = async (req, res) => {
   try {
     const { title, body, community } = req.body;
-    let mediaUrl = null;
+    let image = null;
     if (req.file) {
-      const result = await new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: 'posts' },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        );
-        streamifier.createReadStream(req.file.buffer).pipe(stream);
-      });
+      const result = await uploadToCloudinary(req.file.buffer, 'posts');
       console.log("CLOUDINARY RESULT:", result);
-      mediaUrl = result.secure_url;
+      image = result.secure_url;
     }
 
     if (community) {
@@ -58,11 +49,11 @@ export const createPost = async (req, res) => {
       body,
       community: community || undefined,
       author: req.user._id,
-      mediaUrl
+      image
     });
 
     await post.save();
-    console.log("SAVED POST:", post.mediaUrl);
+    console.log("SAVED POST:", post.image);
     return res.status(201).send(post);
   } catch (error) {
     console.error("FINAL ERROR (createPost):", error);
@@ -81,7 +72,7 @@ export const getFeed = async (req, res) => {
   try {
     const candidatePosts = await Post.find()
       .sort({ createdAt: -1 })
-      .populate('author', 'username avatarUrl')
+      .populate('author', 'username avatar')
       .populate('community', 'name')
       .limit(50)
       .lean();
@@ -103,7 +94,7 @@ export const getFeed = async (req, res) => {
 export const getTrending = async (req, res) => {
   try {
     const candidatePosts = await Post.find()
-      .populate('author', 'username avatarUrl')
+      .populate('author', 'username avatar')
       .populate('community', 'name')
       .sort({ createdAt: -1 })
       .limit(100) // Look at the last 100 posts for trending
@@ -194,7 +185,7 @@ export const addComment = async (req, res) => {
     });
 
     await comment.save();
-    await comment.populate('author', 'username avatarUrl');
+    await comment.populate('author', 'username avatar');
 
     const post = await Post.findById(req.params.id);
 
@@ -229,7 +220,7 @@ export const addComment = async (req, res) => {
 export const getComments = async (req, res) => {
   try {
     const comments = await Comment.find({ post: req.params.id })
-      .populate('author', 'username avatarUrl')
+      .populate('author', 'username avatar')
       .sort({ createdAt: -1 });
     res.send(comments);
   } catch (error) {
@@ -310,7 +301,7 @@ export const getUserPosts = async (req, res) => {
   try {
     const posts = await Post.find({ author: req.params.userId })
       .sort({ createdAt: -1 })
-      .populate('author', 'username avatarUrl')
+      .populate('author', 'username avatar')
       .populate('community', 'name')
       .lean();
 
@@ -332,7 +323,7 @@ export const getUserComments = async (req, res) => {
   try {
     const comments = await Comment.find({ author: req.params.userId })
       .sort({ createdAt: -1 })
-      .populate('author', 'username avatarUrl')
+      .populate('author', 'username avatar')
       .populate({
         path: 'post',
         select: 'title author community',
@@ -355,7 +346,7 @@ export const getUserReposts = async (req, res) => {
   try {
     const posts = await Post.find({ repostedBy: req.params.userId })
       .sort({ createdAt: -1 })
-      .populate('author', 'username avatarUrl')
+      .populate('author', 'username avatar')
       .populate('community', 'name')
       .lean();
 
@@ -402,7 +393,7 @@ export const getSavedPosts = async (req, res) => {
     const user = await User.findById(req.user._id).populate({
       path: 'savedPosts',
       populate: [
-        { path: 'author', select: 'username avatarUrl' },
+        { path: 'author', select: 'username avatar' },
         { path: 'community', select: 'name' }
       ]
     });

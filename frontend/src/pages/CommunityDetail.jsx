@@ -168,8 +168,8 @@ const CommunityDetail = () => {
             onClick={() => isOwner && avatarInputRef.current?.click()}
             style={{ cursor: isOwner ? 'pointer' : 'default' }}
           >
-            {community.avatarUrl ? (
-              <img src={community.avatarUrl} alt={community.name} />
+            {community.avatar ? (
+              <img src={community.avatar} alt={community.name} />
             ) : (
               community.name.charAt(0).toUpperCase()
             )}
@@ -323,7 +323,7 @@ const CommunityDetail = () => {
             {community.members?.map((member) => {
               const memberId = typeof member === 'string' ? member : member._id;
               const memberName = typeof member === 'string' ? 'User' : member.username;
-              const memberAvatar = typeof member === 'string' ? null : member.avatarUrl;
+              const memberAvatar = typeof member === 'string' ? null : member.avatar;
               const memberIsOwner = memberId === (typeof community.owner === 'string' ? community.owner : community.owner?._id);
 
               return (

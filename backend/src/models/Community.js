@@ -5,7 +5,7 @@ const communitySchema = new mongoose.Schema({
   description: { type: String },
   owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  avatarUrl: { type: String, default: '' },
+  avatar: { type: String, default: '' },
   createdAt: { type: Date, default: Date.now }
 });
 

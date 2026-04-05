@@ -1,8 +1,8 @@
-import streamifier from 'streamifier';
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import cloudinary from '../../cloudinary.js';
+import { uploadToCloudinary } from '../utils/cloudinaryHelper.js';
+
 if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET is missing");
 }
@@ -24,7 +24,7 @@ export const register = async (req, res) => {
     await user.save();
 
     const token = generateToken(user._id);
-    res.status(201).send({ user: { _id: user._id, username: user.username, email: user.email, bio: user.bio, avatarUrl: user.avatarUrl, role: user.role, isBanned: user.isBanned }, token });
+    res.status(201).send({ user: { _id: user._id, username: user.username, email: user.email, bio: user.bio, avatar: user.avatar, role: user.role, isBanned: user.isBanned }, token });
   } catch (error) {
     console.error("FULL ERROR (register):", error);
     console.error("STACK:", error.stack);
@@ -54,7 +54,7 @@ export const login = async (req, res) => {
     }
 
     const token = generateToken(user._id);
-    res.send({ user: { _id: user._id, username: user.username, email: user.email, bio: user.bio, avatarUrl: user.avatarUrl, role: user.role, isBanned: user.isBanned }, token });
+    res.send({ user: { _id: user._id, username: user.username, email: user.email, bio: user.bio, avatar: user.avatar, role: user.role, isBanned: user.isBanned }, token });
   } catch (error) {
     console.error("FULL ERROR (login):", error);
     console.error("STACK:", error.stack);
@@ -73,7 +73,7 @@ export const getProfile = async (req, res) => {
         username: user.username,
         email: user.email,
         bio: user.bio,
-        avatarUrl: user.avatarUrl,
+        avatar: user.avatar,
         role: user.role,
         isBanned: user.isBanned,
         communities: user.communities
@@ -107,24 +107,13 @@ export const updateProfile = async (req, res) => {
     if (bio !== undefined) user.bio = bio;
 
     if (req.file) {
-      const result = await new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: "avatars" },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        );
-
-        streamifier.createReadStream(req.file.buffer).pipe(stream);
-      });
-
+      const result = await uploadToCloudinary(req.file.buffer, "avatars");
       console.log("CLOUDINARY RESULT:", result);
-      user.avatarUrl = result.secure_url;
+      user.avatar = result.secure_url;
     }
 
     await user.save();
-    console.log("SAVED USER:", user.avatarUrl);
+    console.log("SAVED USER:", user.avatar);
 
     return res.send({
       user: {
@@ -132,7 +121,7 @@ export const updateProfile = async (req, res) => {
         username: user.username,
         email: user.email,
         bio: user.bio,
-        avatarUrl: user.avatarUrl
+        avatar: user.avatar
       }
     });
 

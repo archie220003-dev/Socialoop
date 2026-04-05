@@ -78,14 +78,14 @@ const Home = () => {
                   minWidth: '240px', maxWidth: '240px', height: '140px',
                   borderRadius: '16px', padding: '16px', cursor: 'pointer',
                   display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
-                  backgroundImage: post.mediaUrl ? `linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2)), url(${import.meta.env.VITE_API_URL}${post.mediaUrl})` : 'linear-gradient(135deg, rgba(var(--primary-rgb), 0.8), rgba(90, 200, 250, 0.8))',
+                  backgroundImage: post.image ? `linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2)), url(${post.image})` : 'linear-gradient(135deg, rgba(var(--primary-rgb), 0.8), rgba(90, 200, 250, 0.8))',
                   backgroundSize: 'cover', backgroundPosition: 'center',
                   scrollSnapAlign: 'start', position: 'relative'
                 }}
               >
                 <h4 style={{ color: 'white', margin: 0, fontSize: '15px', fontWeight: 600, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{post.title}</h4>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                  <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: post.author?.avatarUrl ? `url(${import.meta.env.VITE_API_URL}${post.author.avatarUrl}) center/cover` : 'var(--primary)' }}></div>
+                  <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: post.author?.avatar ? `url(${post.author.avatar}) center/cover` : 'var(--primary)' }}></div>
                   <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '11px' }}>{post.community?.name ? `c/${post.community.name}` : `u/${post.author?.username}`}</span>
                 </div>
               </div>

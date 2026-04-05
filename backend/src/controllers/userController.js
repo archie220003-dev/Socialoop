@@ -1,5 +1,4 @@
 import User from '../models/User.js';
-import cloudinary from '../../cloudinary.js';
 
 export const getUserProfile = async (req, res) => {
   try {
@@ -16,7 +15,7 @@ export const getUserProfile = async (req, res) => {
         username: user.username,
         email: user.email,
         bio: user.bio,
-        avatarUrl: user.avatarUrl,
+        avatar: user.avatar,
         role: user.role,
         isBanned: user.isBanned,
         communities: user.communities

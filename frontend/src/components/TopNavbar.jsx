@@ -240,7 +240,7 @@ const TopNavbar = () => {
                   navigate(result.type === 'community' ? `/community/${result.id}` : `/user/${result.id}`);
                   setShowSearchDropdown(false);
                 }} style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', transition: 'background 0.2s' }} className="search-result-item">
-                  <div className="avatar" style={{ width: '32px', height: '32px', backgroundImage: (result.avatarUrl && result.avatarUrl.startsWith("http")) ? `url(${result.avatarUrl})` : (result.coverUrl && result.coverUrl.startsWith("http") ? `url(${result.coverUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)') }}></div>
+                  <div className="avatar" style={{ width: '32px', height: '32px', backgroundImage: (result.avatar && result.avatar.startsWith("http")) ? `url(${result.avatar})` : (result.coverUrl && result.coverUrl.startsWith("http") ? `url(${result.coverUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)') }}></div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 600, fontSize: '14px' }}>{result.title}</div>
                     <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{result.type}</div>
@@ -363,7 +363,7 @@ const TopNavbar = () => {
                             animationDelay: `${idx * 0.03}s`
                           }}
                         >
-                          <div className="avatar" style={{ width: '36px', height: '36px', backgroundImage: (notif.sender?.avatarUrl && notif.sender.avatarUrl.startsWith("http")) ? `url(${notif.sender.avatarUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)', flexShrink: 0, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                          <div className="avatar" style={{ width: '36px', height: '36px', backgroundImage: (notif.sender?.avatar && notif.sender.avatar.startsWith("http")) ? `url(${notif.sender.avatar})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)', flexShrink: 0, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
                           <div style={{ fontSize: '13px', lineHeight: '1.4', flex: 1 }}>
                             <span style={{ fontWeight: 600 }}>{notif.sender?.username}</span> {getNotificationText(notif.type)}
                             {notif.post?.title && (

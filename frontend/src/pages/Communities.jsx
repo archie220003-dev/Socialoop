@@ -44,8 +44,8 @@ const CommunityCard = ({ c, i, user, handleJoin }) => {
       >
         {/* Avatar */}
         <div className="community-avatar" style={{ transform: 'translateZ(20px)' }}>
-          {c.avatarUrl ? (
-            <img src={c.avatarUrl} alt={c.name} />
+          {c.avatar ? (
+            <img src={c.avatar} alt={c.name} />
           ) : (
             c.name.charAt(0).toUpperCase()
           )}

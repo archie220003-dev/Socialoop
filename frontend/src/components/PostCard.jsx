@@ -223,8 +223,8 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
           >
             <div style={{
               width: '20px', height: '20px', borderRadius: '50%',
-              background: (repostedBy.avatarUrl && repostedBy.avatarUrl.startsWith("http"))
-                ? `url(${repostedBy.avatarUrl}) center/cover` : 'var(--primary)'
+              background: (repostedBy.avatar && repostedBy.avatar.startsWith("http"))
+                ? `url(${repostedBy.avatar}) center/cover` : 'var(--primary)'
             }}></div>
             <span>{repostedBy._id === currentUserId ? 'You' : repostedBy.username}</span>
           </div>
@@ -241,8 +241,8 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
       <div className="post-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div onClick={goToProfile} style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
           <div className="avatar" style={{
-            background: post.author?.avatarUrl?.startsWith("http")
-              ? `url(${post.author.avatarUrl})`
+            background: post.author?.avatar?.startsWith("http")
+              ? `url(${post.author.avatar})`
               : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
           }}></div>
           <div className="author-info">
@@ -314,9 +314,9 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
       <h3 className="post-title">{post.title}</h3>
       {post.body && <p className="post-body">{post.body}</p>}
 
-      {post.mediaUrl && (
+      {post.image && (
         <img
-          src={post.mediaUrl?.startsWith("http") ? post.mediaUrl : ""}
+          src={post.image?.startsWith("http") ? post.image : ""}
           alt="Post content"
           className="post-image"
           onClick={(e) => {
@@ -423,7 +423,7 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
       {/* Truly Fullscreen Portal */}
       {isFullScreen && (
         <FullScreenPortal
-          src={post.mediaUrl?.startsWith("http") ? post.mediaUrl : ""}
+          src={post.image?.startsWith("http") ? post.image : ""}
           onClose={() => setIsFullScreen(false)}
         />
       )}

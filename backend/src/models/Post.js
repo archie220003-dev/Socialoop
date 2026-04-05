@@ -5,7 +5,7 @@ const postSchema = new mongoose.Schema({
   community: { type: mongoose.Schema.Types.ObjectId, ref: 'Community' },
   title: { type: String, required: true },
   body: { type: String },
-  mediaUrl: { type: String },
+  image: { type: String },
   upvotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   downvotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   repostedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
