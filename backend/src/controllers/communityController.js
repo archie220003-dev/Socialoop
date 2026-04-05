@@ -1,6 +1,7 @@
 import Community from '../models/Community.js';
 import User from '../models/User.js';
 import Post from '../models/Post.js';
+import cloudinary from '../../cloudinary.js';
 
 export const createCommunity = async (req, res) => {
   try {

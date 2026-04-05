@@ -1,4 +1,4 @@
-import cloudinary from '../config/cloudinary.js';
+import cloudinary from '../../cloudinary.js';
 import Post, { Comment } from '../models/Post.js';
 import Notification from '../models/Notification.js';
 import User from '../models/User.js';

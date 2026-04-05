@@ -1,14 +1,15 @@
 import User from '../models/User.js';
+import cloudinary from '../../cloudinary.js';
 
 export const getUserProfile = async (req, res) => {
   try {
     const { id } = req.params;
     const user = await User.findById(id).select('-password').populate('communities');
-    
+
     if (!user) {
       return res.status(404).send({ error: 'User not found' });
     }
-    
+
     res.send({ user });
   } catch (error) {
     res.status(500).send({ error: error.message });

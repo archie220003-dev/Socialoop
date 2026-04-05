@@ -1,6 +1,7 @@
 import { SearchTrie } from '../algorithms/SearchIndex.js';
 import User from '../models/User.js';
 import Community from '../models/Community.js';
+import cloudinary from '../../cloudinary.js';
 
 // Rebuild Trie (In a production system you would dynamically update this, but for a demo we can just rebuild or cache)
 export const globalSearch = async (req, res) => {
@@ -24,7 +25,7 @@ export const globalSearch = async (req, res) => {
 
     // Search
     const results = trie.searchPrefix(q);
-    
+
     // Limit to 10 results max
     res.send(results.slice(0, 10));
   } catch (error) {

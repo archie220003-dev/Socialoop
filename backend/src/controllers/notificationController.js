@@ -1,4 +1,5 @@
 import Notification from '../models/Notification.js';
+import cloudinary from '../../cloudinary.js';
 
 export const getNotifications = async (req, res) => {
   try {

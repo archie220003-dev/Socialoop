@@ -1,6 +1,6 @@
 import { Conversation, Message } from '../models/Message.js';
 import User from '../models/User.js';
-import cloudinary from '../config/cloudinary.js';
+import cloudinary from '../../cloudinary.js';
 
 // Helper: Deduplicate conversations for a user
 // Merges messages from duplicate conversations into one and deletes extras
