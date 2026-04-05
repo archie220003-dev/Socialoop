@@ -6,8 +6,8 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: 'socialoop',
-    allowed_formats: ['jpg', 'png', 'jpeg'],
-  },
+    allowed_formats: ['jpg', 'png', 'jpeg', 'webp']
+  }
 });
 
 export const upload = multer({ storage });
