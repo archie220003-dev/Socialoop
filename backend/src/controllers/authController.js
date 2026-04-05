@@ -2,9 +2,11 @@ import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import cloudinary from '../../cloudinary.js';
-
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET is missing");
+}
 const generateToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET || 'nexa-secret', { expiresIn: '7d' });
+  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
 };
 
 export const register = async (req, res) => {
