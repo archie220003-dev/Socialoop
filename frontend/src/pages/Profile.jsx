@@ -423,3 +423,4 @@ const Profile = () => {
 };
 
 export default Profile;
+console.log(import.meta.env.VITE_API_URL);
