@@ -79,9 +79,9 @@ const Profile = () => {
 
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
-        method: "PUT",
+        method: 'PUT',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         },
         body: formData
       });
