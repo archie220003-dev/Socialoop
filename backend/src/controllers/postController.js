@@ -1,3 +1,4 @@
+import cloudinary from '../config/cloudinary.js';
 import Post, { Comment } from '../models/Post.js';
 import Notification from '../models/Notification.js';
 import User from '../models/User.js';
@@ -26,7 +27,8 @@ export const createPost = async (req, res) => {
     const { title, body, community } = req.body;
     let mediaUrl = null;
     if (req.file) {
-      mediaUrl = req.file.path;
+      const result = await cloudinary.uploader.upload(req.file.path);
+      mediaUrl = result.secure_url;
     }
 
     if (community) {
