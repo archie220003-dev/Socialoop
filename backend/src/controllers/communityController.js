@@ -107,7 +107,8 @@ export const updateCommunityAvatar = async (req, res) => {
     }
 
     if (req.file) {
-      community.avatarUrl = req.file.path;
+      const result = await cloudinary.uploader.upload(req.file.path);
+      community.avatarUrl = result.secure_url;
       await community.save();
     }
 

@@ -10,7 +10,18 @@ export const getUserProfile = async (req, res) => {
       return res.status(404).send({ error: 'User not found' });
     }
 
-    res.send({ user });
+    res.send({
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        bio: user.bio,
+        avatarUrl: user.avatarUrl,
+        role: user.role,
+        isBanned: user.isBanned,
+        communities: user.communities
+      }
+    });
   } catch (error) {
     res.status(500).send({ error: error.message });
   }

@@ -60,7 +60,18 @@ export const getProfile = async (req, res) => {
     const user = await User.findById(req.user._id).select('-password').populate('communities');
     if (!user) return res.status(404).send({ error: 'User not found' });
     if (user.isBanned) return res.status(403).send({ error: 'Account has been banned' });
-    res.send({ user });
+    res.send({
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        bio: user.bio,
+        avatarUrl: user.avatarUrl,
+        role: user.role,
+        isBanned: user.isBanned,
+        communities: user.communities
+      }
+    });
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
