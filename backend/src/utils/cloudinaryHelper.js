@@ -1,12 +1,15 @@
-import { v2 as cloudinary } from "cloudinary";
-import streamifier from "streamifier";
+import cloudinary from './cloudinary.js';
+import streamifier from 'streamifier';
 
-export const uploadToCloudinary = (buffer, folder = "uploads") => {
+export const uploadToCloudinary = (buffer, folder) => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
-      { folder },
+      { folder, resource_type: "auto" },
       (error, result) => {
-        if (error) return reject(error);
+        if (error) {
+          console.error("CLOUDINARY ERROR:", error);
+          return reject(error);
+        }
         resolve(result);
       }
     );
