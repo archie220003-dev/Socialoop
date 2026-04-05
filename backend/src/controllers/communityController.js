@@ -128,18 +128,25 @@ export const updateCommunityAvatar = async (req, res) => {
         );
         streamifier.createReadStream(req.file.buffer).pipe(stream);
       });
+
+      console.log("CLOUDINARY RESULT:", result);
       community.avatarUrl = result.secure_url;
       await community.save();
+      console.log("SAVED COMMUNITY:", community.avatarUrl);
     }
 
     const populated = await Community.findById(community._id)
       .populate('owner', 'username avatarUrl')
       .populate('members', 'username avatarUrl');
-    res.send(populated);
+
+    return res.send(populated);
   } catch (error) {
-    console.error("FULL ERROR (updateCommunityAvatar):", error);
-    console.error("STACK:", error.stack);
-    res.status(500).send({ error: error.message });
+    console.error("FINAL ERROR (updateCommunityAvatar):", error);
+    console.error("STACK:", error?.stack);
+
+    return res.status(500).send({
+      error: error?.message || "UNKNOWN_ERROR"
+    });
   }
 };
 

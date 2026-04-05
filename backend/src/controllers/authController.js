@@ -119,11 +119,14 @@ export const updateProfile = async (req, res) => {
         streamifier.createReadStream(req.file.buffer).pipe(stream);
       });
 
+      console.log("CLOUDINARY RESULT:", result);
       user.avatarUrl = result.secure_url;
     }
-    await user.save();
 
-    res.send({
+    await user.save();
+    console.log("SAVED USER:", user.avatarUrl);
+
+    return res.send({
       user: {
         _id: user._id,
         username: user.username,
@@ -134,10 +137,10 @@ export const updateProfile = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("UPDATE PROFILE FULL ERROR:", error);
+    console.error("FINAL ERROR (updateProfile):", error);
     console.error("STACK:", error?.stack);
 
-    res.status(500).send({
+    return res.status(500).send({
       error: error?.message || "UNKNOWN_ERROR"
     });
   }

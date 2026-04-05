@@ -146,6 +146,7 @@ export const sendMessage = async (req, res) => {
         );
         streamifier.createReadStream(req.file.buffer).pipe(stream);
       });
+      console.log("CLOUDINARY RESULT:", result);
       mediaUrl = result.secure_url;
     }
 
@@ -167,6 +168,7 @@ export const sendMessage = async (req, res) => {
     });
 
     await message.save();
+    console.log("SAVED MESSAGE:", message.mediaUrl);
 
     conversation.lastMessage = message._id;
     await conversation.save();
@@ -176,11 +178,14 @@ export const sendMessage = async (req, res) => {
       { path: 'conversationId', select: 'participants' }
     ]);
 
-    res.status(201).send(message);
+    return res.status(201).send(message);
   } catch (err) {
-    console.error("FULL ERROR (sendMessage):", err);
+    console.error("FINAL ERROR (sendMessage):", err);
     console.error("STACK:", err.stack);
-    res.status(500).send({ error: err.message });
+
+    return res.status(500).send({
+      error: err.message || "UNKNOWN_ERROR"
+    });
   }
 };
 

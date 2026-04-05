@@ -29,7 +29,9 @@ const RightSidebar = () => {
               className="avatar"
               style={{
                 width: '64px', height: '64px', margin: '0 auto 12px', border: '3px solid var(--surface)',
-                background: user.avatarUrl ? `url(${import.meta.env.VITE_API_URL}${user.avatarUrl}) center/cover` : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
+                background: user.avatarUrl 
+                  ? (user.avatarUrl.startsWith("http") ? `url(${user.avatarUrl}) center/cover` : `url(${import.meta.env.VITE_API_URL}${user.avatarUrl}) center/cover`)
+                  : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
               }}
             ></div>
             <h4 style={{ fontWeight: 600, fontSize: '16px', margin: '0 0 4px 0' }}>{user.username}</h4>

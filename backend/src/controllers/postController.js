@@ -40,6 +40,7 @@ export const createPost = async (req, res) => {
         );
         streamifier.createReadStream(req.file.buffer).pipe(stream);
       });
+      console.log("CLOUDINARY RESULT:", result);
       mediaUrl = result.secure_url;
     }
 
@@ -61,11 +62,15 @@ export const createPost = async (req, res) => {
     });
 
     await post.save();
-    res.status(201).send(post);
+    console.log("SAVED POST:", post.mediaUrl);
+    return res.status(201).send(post);
   } catch (error) {
-    console.error("FULL ERROR (createPost):", error);
-    console.error("STACK:", error.stack);
-    res.status(400).send({ error: error.message });
+    console.error("FINAL ERROR (createPost):", error);
+    console.error("STACK:", error?.stack);
+
+    return res.status(500).send({
+      error: error?.message || "UNKNOWN_ERROR"
+    });
   }
 };
 
