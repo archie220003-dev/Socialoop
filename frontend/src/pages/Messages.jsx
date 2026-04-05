@@ -22,7 +22,7 @@ const Messages = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState(null);
   const [socketConnected, setSocketConnected] = useState(false);
-  
+
   const messagesEndRef = useRef(null);
   const searchTimerRef = useRef(null);
 
@@ -37,13 +37,13 @@ const Messages = () => {
         const incConvId = newMessageRecieved.conversationId?._id || newMessageRecieved.conversationId;
         if (selectedConversation && incConvId === selectedConversation._id) {
           if (!prev.find(m => m._id === newMessageRecieved._id)) {
-             return [...prev, newMessageRecieved];
+            return [...prev, newMessageRecieved];
           }
           return prev;
         }
         return prev;
       });
-      
+
       fetchConversations();
     });
 
@@ -122,7 +122,7 @@ const Messages = () => {
       const data = await res.json();
       setMessages(data);
       socket.emit('join chat', conversationId);
-      
+
       // Notify other components (like Sidebar) to refresh global unread count
       window.dispatchEvent(new CustomEvent('messages-read'));
     } catch (err) {
@@ -132,17 +132,17 @@ const Messages = () => {
 
   const selectConversation = (conversation) => {
     if (!conversation || conversation.error) {
-       console.error("Invalid conversation selected:", conversation);
-       return;
+      console.error("Invalid conversation selected:", conversation);
+      return;
     }
     setSelectedConversation(conversation);
     fetchMessages(conversation._id);
 
     // Locally mark the conversation as read to update UI immediately
-    setConversations((prev) => 
-      prev.map(c => 
-        c._id === conversation._id && c.lastMessage 
-          ? { ...c, lastMessage: { ...c.lastMessage, read: true } } 
+    setConversations((prev) =>
+      prev.map(c =>
+        c._id === conversation._id && c.lastMessage
+          ? { ...c, lastMessage: { ...c.lastMessage, read: true } }
           : c
       )
     );
@@ -158,12 +158,12 @@ const Messages = () => {
         }
       });
       const data = await res.json();
-      
+
       if (!res.ok) {
         setError(data.error || 'Failed to start conversation');
         return;
       }
-      
+
       const exists = conversations.find(c => c._id === data._id);
       if (!exists) {
         setConversations(prev => [data, ...prev]);
@@ -214,11 +214,11 @@ const Messages = () => {
         body: formData
       });
       const data = await res.json();
-      
+
       if (!res.ok) {
         throw new Error(data.error || 'Failed to send message');
       }
-      
+
       socket.emit('new message', data);
       setMessages((prev) => [...prev, data]);
       fetchConversations();
@@ -237,9 +237,9 @@ const Messages = () => {
   // Filter existing conversations when searching
   const filteredConversations = searchQuery.trim()
     ? conversations.filter(conv => {
-        const other = getOtherParticipant(conv.participants);
-        return other?.username?.toLowerCase().includes(searchQuery.toLowerCase());
-      })
+      const other = getOtherParticipant(conv.participants);
+      return other?.username?.toLowerCase().includes(searchQuery.toLowerCase());
+    })
     : conversations;
 
   // Check if a search result user already has a conversation
@@ -252,7 +252,7 @@ const Messages = () => {
 
   const deleteChat = async () => {
     if (!window.confirm("Are you sure you want to delete this chat? This action cannot be undone.")) return;
-    
+
     try {
       const res = await fetch(`${ENDPOINT}/api/messages/${selectedConversation._id}`, {
         method: 'DELETE',
@@ -260,7 +260,7 @@ const Messages = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-      
+
       if (res.ok) {
         setConversations(conversations.filter(c => c._id !== selectedConversation._id));
         setSelectedConversation(null);
@@ -291,16 +291,16 @@ const Messages = () => {
           <h2 style={{ fontWeight: 800, margin: '0 0 20px 0', fontSize: '26px', letterSpacing: '-0.5px' }}>Messages</h2>
           <div className="search-bar-wrapper" style={{ position: 'relative' }}>
             <Search className="search-icon" size={16} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }} />
-            <input 
-              type="text" 
-              className="input search-input shadow-input" 
-              placeholder="Search users to message..." 
+            <input
+              type="text"
+              className="input search-input shadow-input"
+              placeholder="Search users to message..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               style={{ marginBottom: 0, paddingLeft: '36px', height: '40px', borderRadius: '20px', fontSize: '14px', background: 'var(--surface)', border: 'none' }}
             />
             {searchQuery && (
-              <button 
+              <button
                 onClick={() => { setSearchQuery(''); setSearchResults([]); }}
                 style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(var(--text-main-rgb), 0.08)', border: 'none', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-muted)' }}
               >
@@ -330,14 +330,14 @@ const Messages = () => {
                         if (!other) return null;
                         const isActive = selectedConversation?._id === conv._id;
                         return (
-                          <div 
-                            key={conv._id} 
+                          <div
+                            key={conv._id}
                             className={`conversation-item ${isActive ? 'active' : ''}`}
                             onClick={() => { selectConversation(conv); setSearchQuery(''); setSearchResults([]); }}
                             style={{ borderBottom: 'none', margin: '2px 0', borderRadius: '12px', padding: '10px 12px' }}
                           >
-                            <div className="avatar" style={{ 
-                              backgroundImage: other.avatarUrl ? `url(${ENDPOINT}${other.avatarUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)', 
+                            <div className="avatar" style={{
+                              backgroundImage: other.avatarUrl ? `url(${ENDPOINT}${other.avatarUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)',
                               width: '40px', height: '40px', backgroundSize: 'cover', backgroundPosition: 'center'
                             }}></div>
                             <div className="conversation-info">
@@ -368,14 +368,14 @@ const Messages = () => {
                         .map(su => {
                           const existingConv = getUserConversation(su.id);
                           return (
-                            <div 
+                            <div
                               key={su.id}
                               className="conversation-item"
                               onClick={() => handleSearchUserClick(su)}
                               style={{ padding: '10px 12px', borderRadius: '12px', marginBottom: '2px', borderBottom: 'none', cursor: 'pointer', transition: 'background 0.2s' }}
                             >
-                              <div className="avatar" style={{ 
-                                backgroundImage: su.avatarUrl ? `url(${ENDPOINT}${su.avatarUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)', 
+                              <div className="avatar" style={{
+                                backgroundImage: su.avatarUrl ? `url(${ENDPOINT}${su.avatarUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)',
                                 width: '40px', height: '40px', backgroundSize: 'cover', backgroundPosition: 'center'
                               }}></div>
                               <div className="conversation-info">
@@ -416,46 +416,46 @@ const Messages = () => {
                 const other = getOtherParticipant(conv.participants);
                 if (!other) return null;
                 const isActive = selectedConversation?._id === conv._id;
-                
+
                 // Unread check: last message exists, is from other user, and is not read
-                const isUnread = conv.lastMessage && 
-                                conv.lastMessage.sender !== user._id && 
-                                !conv.lastMessage.read;
+                const isUnread = conv.lastMessage &&
+                  conv.lastMessage.sender !== user._id &&
+                  !conv.lastMessage.read;
 
                 return (
-                  <div 
-                    key={conv._id} 
+                  <div
+                    key={conv._id}
                     className={`conversation-item ${isActive ? 'active' : ''}`}
                     onClick={() => selectConversation(conv)}
-                    style={{ 
-                      borderBottom: 'none', 
-                      margin: '4px 8px', 
-                      borderRadius: '12px', 
+                    style={{
+                      borderBottom: 'none',
+                      margin: '4px 8px',
+                      borderRadius: '12px',
                       padding: '12px',
                       position: 'relative'
                     }}
                   >
-                    <div className="avatar" style={{ 
-                      backgroundImage: other.avatarUrl ? `url(${ENDPOINT}${other.avatarUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)', 
+                    <div className="avatar" style={{
+                      backgroundImage: other.avatarUrl ? `url(${ENDPOINT}${other.avatarUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)',
                       width: '48px', height: '48px', backgroundSize: 'cover', backgroundPosition: 'center'
                     }}>
                       {isUnread && (
-                        <div style={{ 
-                          position: 'absolute', top: '0', right: '0', 
-                          width: '12px', height: '12px', 
-                          background: '#FF3B30', borderRadius: '50%', 
+                        <div style={{
+                          position: 'absolute', top: '0', right: '0',
+                          width: '12px', height: '12px',
+                          background: '#FF3B30', borderRadius: '50%',
                           border: '2px solid var(--surface)',
                           zIndex: 2
                         }}></div>
                       )}
                     </div>
                     <div className="conversation-info">
-                      <h4 style={{ 
-                        fontWeight: isUnread ? 800 : 600, 
+                      <h4 style={{
+                        fontWeight: isUnread ? 800 : 600,
                         fontSize: '15px',
                         color: isUnread ? 'white' : 'var(--text-main)'
                       }}>{other.username}</h4>
-                      <p style={{ 
+                      <p style={{
                         color: isUnread ? 'white' : (isActive ? 'var(--text-main)' : 'var(--text-muted)'),
                         fontWeight: isUnread ? 700 : 400
                       }}>
@@ -483,22 +483,22 @@ const Messages = () => {
             {/* Chat header */}
             <div className="chat-header" style={{ padding: '24px 32px', borderBottom: '1px solid rgba(var(--surface-border-rgb), 0.05)', background: 'rgba(var(--surface-rgb), 0.4)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <button 
-                  className="action-btn back-btn mobile-only" 
+                <button
+                  className="action-btn back-btn mobile-only"
                   onClick={() => setSelectedConversation(null)}
                 >
                   <ArrowLeft size={20} />
                 </button>
-                
+
                 {(() => {
                   const other = getOtherParticipant(selectedConversation.participants);
                   return (
-                    <div 
+                    <div
                       onClick={() => navigate(`/user/${other?._id}`)}
-                      style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: '16px', 
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '16px',
                         cursor: 'pointer',
                         padding: '4px 8px',
                         marginLeft: '-8px',
@@ -508,7 +508,7 @@ const Messages = () => {
                       onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
                       onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                     >
-                      <div className="avatar" style={{ 
+                      <div className="avatar" style={{
                         width: '44px', height: '44px',
                         backgroundImage: other?.avatarUrl ? `url(${ENDPOINT}${other.avatarUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)',
                         boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
@@ -522,9 +522,9 @@ const Messages = () => {
                 })()}
               </div>
 
-              <button 
+              <button
                 onClick={deleteChat}
-                className="action-btn" 
+                className="action-btn"
                 style={{ color: '#FF3B30', padding: '8px', background: 'rgba(255, 59, 48, 0.1)', borderRadius: '50%' }}
                 title="Delete Chat"
               >
@@ -539,14 +539,14 @@ const Messages = () => {
                 return (
                   <div key={msg._id || i} className={`message-bubble-wrapper ${isMe ? 'message-mine' : 'message-theirs'}`}>
                     {!isMe && (
-                      <div className="avatar message-avatar" style={{ 
+                      <div className="avatar message-avatar" style={{
                         backgroundImage: msg.sender?.avatarUrl ? `url(${ENDPOINT}${msg.sender.avatarUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)',
                         backgroundSize: 'cover', backgroundPosition: 'center'
                       }}></div>
                     )}
                     <div className="message-content">
                       {msg.mediaUrl && (
-                        <img src={`${ENDPOINT}${msg.mediaUrl}`} alt="Sent media" className="message-media" />
+                        <img src={msg.mediaUrl} alt="Sent media" className="message-media" />
                       )}
                       {msg.text && (
                         <div className="message-bubble">
@@ -568,7 +568,7 @@ const Messages = () => {
               {preview && (
                 <div className="message-preview-container">
                   <img src={preview} alt="Attachment preview" />
-                  <button type="button" onClick={() => {setPreview(null); setMedia(null);}}><X size={14} /></button>
+                  <button type="button" onClick={() => { setPreview(null); setMedia(null); }}><X size={14} /></button>
                 </div>
               )}
               <form onSubmit={sendMessage} className="chat-form" style={{ background: 'var(--surface)', padding: '4px 8px', borderRadius: '30px', display: 'flex', border: '1px solid var(--surface-border)', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
@@ -576,17 +576,17 @@ const Messages = () => {
                   <input type="file" accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} />
                   <ImageIcon size={22} />
                 </label>
-                <input 
-                  type="text" 
-                  className="input chat-input" 
-                  placeholder="iMessage" 
+                <input
+                  type="text"
+                  className="input chat-input"
+                  placeholder="iMessage"
                   value={newMessage}
                   onChange={e => setNewMessage(e.target.value)}
                   style={{ border: 'none', background: 'transparent', flex: 1, boxShadow: 'none' }}
                 />
-                <button 
-                  type="submit" 
-                  className="button chat-send-btn" 
+                <button
+                  type="submit"
+                  className="button chat-send-btn"
                   disabled={!newMessage.trim() && !media}
                   style={{ width: '36px', height: '36px', borderRadius: '50%', padding: 0 }}
                 >

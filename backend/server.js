@@ -32,7 +32,6 @@ const io = new Server(httpServer, {
 
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 const PORT = process.env.PORT || 5001;
 

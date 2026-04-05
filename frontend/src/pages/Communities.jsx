@@ -23,20 +23,20 @@ const CommunityCard = ({ c, i, user, handleJoin }) => {
   const owner = isOwner(c);
 
   return (
-    <Link 
-      key={c._id} 
+    <Link
+      key={c._id}
       to={`/community/${c._id}`}
       style={{ textDecoration: 'none', color: 'inherit' }}
     >
-      <div 
+      <div
         ref={ref}
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
-        className="glass glass-card community-card glow-card staggered-item" 
-        style={{ 
+        className="glass glass-card community-card glow-card staggered-item"
+        style={{
           ...tiltStyle,
-          display: 'flex', 
-          alignItems: 'center', 
+          display: 'flex',
+          alignItems: 'center',
           gap: '16px',
           animationDelay: `${i * 0.05}s`,
           transformStyle: 'preserve-3d'
@@ -45,7 +45,7 @@ const CommunityCard = ({ c, i, user, handleJoin }) => {
         {/* Avatar */}
         <div className="community-avatar" style={{ transform: 'translateZ(20px)' }}>
           {c.avatarUrl ? (
-            <img src={`${import.meta.env.VITE_API_URL}${c.avatarUrl}`} alt={c.name} />
+            <img src={c.avatarUrl} alt={c.name} />
           ) : (
             c.name.charAt(0).toUpperCase()
           )}
@@ -61,11 +61,11 @@ const CommunityCard = ({ c, i, user, handleJoin }) => {
               </span>
             )}
           </div>
-          <p style={{ 
-            color: 'var(--text-muted)', 
-            fontSize: '13px', 
-            whiteSpace: 'nowrap', 
-            overflow: 'hidden', 
+          <p style={{
+            color: 'var(--text-muted)',
+            fontSize: '13px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
             textOverflow: 'ellipsis',
             marginBottom: '6px'
           }}>
@@ -80,8 +80,8 @@ const CommunityCard = ({ c, i, user, handleJoin }) => {
         </div>
 
         {/* Join button */}
-        <button 
-          className={`button ${member ? '' : 'button-outline'}`} 
+        <button
+          className={`button ${member ? '' : 'button-outline'}`}
           onClick={(e) => !member && handleJoin(e, c._id)}
           disabled={member}
           style={{
@@ -182,7 +182,7 @@ const Communities = () => {
     .filter(c => {
       if (!searchQuery) return true;
       return c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-             c.description?.toLowerCase().includes(searchQuery.toLowerCase());
+        c.description?.toLowerCase().includes(searchQuery.toLowerCase());
     })
     .sort((a, b) => (b.members?.length || 0) - (a.members?.length || 0));
 
@@ -196,8 +196,8 @@ const Communities = () => {
             Discover and join communities
           </p>
         </div>
-        <button 
-          className="button" 
+        <button
+          className="button"
           onClick={() => setShowCreate(!showCreate)}
           style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
         >
@@ -213,19 +213,19 @@ const Communities = () => {
           <form onSubmit={handleCreate}>
             <div style={{ position: 'relative' }}>
               <span style={{ position: 'absolute', left: '16px', top: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>c/</span>
-              <input 
-                type="text" 
-                placeholder="community-name" 
-                className="input" 
+              <input
+                type="text"
+                placeholder="community-name"
+                className="input"
                 value={name}
                 onChange={(e) => setName(e.target.value.replace(/\s/g, '-').toLowerCase())}
                 required
                 style={{ paddingLeft: '36px' }}
               />
             </div>
-            <textarea 
-              placeholder="What's this community about?" 
-              className="input" 
+            <textarea
+              placeholder="What's this community about?"
+              className="input"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               style={{ minHeight: '80px' }}

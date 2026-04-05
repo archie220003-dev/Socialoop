@@ -8,9 +8,9 @@ export const getPostById = async (req, res) => {
       .populate('author', 'username avatarUrl')
       .populate('community', 'name')
       .lean();
-    
+
     if (!post) return res.status(404).send({ error: 'Post not found' });
-    
+
     res.send({
       ...post,
       upvotes: post.upvotedBy?.length || 0,
@@ -26,7 +26,7 @@ export const createPost = async (req, res) => {
     const { title, body, community } = req.body;
     let mediaUrl = null;
     if (req.file) {
-      mediaUrl = `/uploads/${req.file.filename}`;
+      mediaUrl = req.file.path;
     }
 
     if (community) {

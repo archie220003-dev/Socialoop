@@ -60,7 +60,7 @@ const TopNavbar = () => {
           const res = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications`, {
             headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
           });
-          if(res.ok) {
+          if (res.ok) {
             const data = await res.json();
             setNotifications(data);
             setUnreadCount(data.filter(n => !n.isRead).length);
@@ -73,7 +73,7 @@ const TopNavbar = () => {
       // Start socket
       socket = io(ENDPOINT);
       socket.emit('setup', user);
-      
+
       socket.on('new notification', () => {
         fetchNotifications();
       });
@@ -114,7 +114,7 @@ const TopNavbar = () => {
       });
       setNotifications(notifications.map(n => n._id === notification._id ? { ...n, isRead: true } : n));
       setUnreadCount(prev => Math.max(0, prev - 1));
-      
+
       // Navigate based on notification type
       switch (notification.type) {
         case 'LIKE_POST':
@@ -129,7 +129,7 @@ const TopNavbar = () => {
           } else if (notification.post) {
             postId = notification.post;
           }
-          
+
           if (postId) {
             navigate(`/post/${postId}`);
           } else {
@@ -148,15 +148,15 @@ const TopNavbar = () => {
           }
           break;
       }
-      
+
       setShowNotifications(false);
-    } catch(err) {
+    } catch (err) {
       console.error(err);
     }
   };
 
   const getNotificationText = (type) => {
-    switch(type) {
+    switch (type) {
       case 'LIKE_POST': return 'liked your post';
       case 'COMMENT_POST': return 'commented on your post';
       case 'REPLY_COMMENT': return 'replied to your comment';
@@ -200,13 +200,13 @@ const TopNavbar = () => {
       {/* Brand */}
       <div className="navbar-brand" style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', perspective: '1000px' }}>
-          <img 
-            src={activeTheme === 'dark' ? logoWhite : logoBlack} 
-            alt="Socialoop" 
-            style={{ height: '52px', width: 'auto', transform: 'translateZ(10px)', marginTop: '-4px', marginBottom: '-4px' }} 
+          <img
+            src={activeTheme === 'dark' ? logoWhite : logoBlack}
+            alt="Socialoop"
+            style={{ height: '52px', width: 'auto', transform: 'translateZ(10px)', marginTop: '-4px', marginBottom: '-4px' }}
           />
-          <h1 className="login-title-glow" style={{ 
-            margin: 0, fontWeight: 900, fontSize: '24px', 
+          <h1 className="login-title-glow" style={{
+            margin: 0, fontWeight: 900, fontSize: '24px',
             letterSpacing: '-0.8px', display: 'block',
             transform: 'translateZ(10px)'
           }}>
@@ -219,15 +219,15 @@ const TopNavbar = () => {
       <div className="navbar-search" style={{ flex: '1 1 auto', maxWidth: '500px', display: 'flex', justifyContent: 'center', position: 'relative', margin: '0 16px' }}>
         <div style={{ width: '100%', position: 'relative' }}>
           <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-          <input 
-            type="text" 
+          <input
+            type="text"
             placeholder="Search communities, users..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => { if(searchQuery) setShowSearchDropdown(true); }}
+            onFocus={() => { if (searchQuery) setShowSearchDropdown(true); }}
             onBlur={() => setTimeout(() => setShowSearchDropdown(false), 200)}
             className="navbar-search-input"
-            style={{ 
+            style={{
               width: '100%', padding: '10px 16px 10px 44px', borderRadius: '24px',
               border: '1px solid var(--surface-border)', background: 'var(--surface-hover)',
               color: 'var(--text-main)', outline: 'none', fontSize: '14px', transition: 'box-shadow 0.2s'
@@ -254,14 +254,14 @@ const TopNavbar = () => {
 
       {/* Actions */}
       <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
-        
+
         {/* Theme Dropdown */}
         <div style={{ position: 'relative' }} ref={themeRef}>
-          <button 
-            onClick={toggleTheme} 
-            className="action-btn navbar-icon-btn" 
-            style={{ 
-              background: 'rgba(var(--text-main-rgb), 0.05)', 
+          <button
+            onClick={toggleTheme}
+            className="action-btn navbar-icon-btn"
+            style={{
+              background: 'rgba(var(--text-main-rgb), 0.05)',
               color: 'var(--text-main)',
               display: 'flex',
               alignItems: 'center',
@@ -277,20 +277,20 @@ const TopNavbar = () => {
           </button>
 
           {showThemeDropdown && (
-            <div 
-              className="glass glass-dropdown dropdown-animate" 
-              style={{ 
-                position: 'absolute', top: '100%', right: 0, width: '140px', marginTop: '12px', 
-                borderRadius: '12px', padding: '6px', zIndex: 110 
+            <div
+              className="glass glass-dropdown dropdown-animate"
+              style={{
+                position: 'absolute', top: '100%', right: 0, width: '140px', marginTop: '12px',
+                borderRadius: '12px', padding: '6px', zIndex: 110
               }}
             >
               {themeOptions.map((opt) => (
-                <button 
+                <button
                   key={opt.id}
-                  className="button-ghost dropdown-item" 
-                  style={{ 
-                    display: 'flex', alignItems: 'center', gap: '10px', width: '100%', 
-                    textAlign: 'left', padding: '10px 12px', borderRadius: '8px', 
+                  className="button-ghost dropdown-item"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
+                    textAlign: 'left', padding: '10px 12px', borderRadius: '8px',
                     fontSize: '13px', marginBottom: '2px',
                     color: theme === opt.id ? 'var(--primary)' : 'var(--text-main)',
                     background: theme === opt.id ? 'rgba(var(--primary-rgb), 0.08)' : 'transparent'
@@ -309,12 +309,12 @@ const TopNavbar = () => {
           <>
             {/* Notifications Dropdown */}
             <div style={{ position: 'relative' }} ref={notifRef}>
-              <button 
-                onClick={toggleNotifications} 
-                className="action-btn navbar-icon-btn" 
-                style={{ 
-                  background: showNotifications ? 'rgba(var(--primary-rgb), 0.08)' : 'transparent', 
-                  color: 'var(--text-main)', 
+              <button
+                onClick={toggleNotifications}
+                className="action-btn navbar-icon-btn"
+                style={{
+                  background: showNotifications ? 'rgba(var(--primary-rgb), 0.08)' : 'transparent',
+                  color: 'var(--text-main)',
                   position: 'relative',
                   padding: '8px',
                   borderRadius: '50%',
@@ -336,8 +336,8 @@ const TopNavbar = () => {
                     <h3 style={{ margin: 0, fontWeight: 700, fontSize: '16px' }}>Notifications</h3>
                     {unreadCount > 0 && (
                       <button className="button-ghost" style={{ fontSize: '12px', padding: '4px 10px', borderRadius: '8px', color: 'var(--primary)' }} onClick={async () => {
-                        await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/read-all`, { method: 'PUT', headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
-                        setNotifications(notifications.map(n => ({...n, isRead: true})));
+                        await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/read-all`, { method: 'PUT', headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+                        setNotifications(notifications.map(n => ({ ...n, isRead: true })));
                         setUnreadCount(0);
                       }}>Mark all read</button>
                     )}
@@ -351,14 +351,14 @@ const TopNavbar = () => {
                       </div>
                     ) : (
                       notifications.map((notif, idx) => (
-                        <div 
-                          key={notif._id} 
-                          onClick={() => handleNotificationClick(notif)} 
+                        <div
+                          key={notif._id}
+                          onClick={() => handleNotificationClick(notif)}
                           className="dropdown-item"
-                          style={{ 
-                            display: 'flex', gap: '12px', padding: '12px', borderRadius: '10px', 
-                            cursor: 'pointer', 
-                            background: notif.isRead ? 'transparent' : 'rgba(var(--primary-rgb), 0.05)', 
+                          style={{
+                            display: 'flex', gap: '12px', padding: '12px', borderRadius: '10px',
+                            cursor: 'pointer',
+                            background: notif.isRead ? 'transparent' : 'rgba(var(--primary-rgb), 0.05)',
                             marginBottom: '2px',
                             animationDelay: `${idx * 0.03}s`
                           }}
@@ -384,12 +384,12 @@ const TopNavbar = () => {
 
             {/* User Profile Dropdown */}
             <div style={{ position: 'relative' }} ref={userRef}>
-              <div 
+              <div
                 onClick={toggleUser}
                 className="navbar-icon-btn"
-                style={{ 
+                style={{
                   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
-                  background: showUserDropdown ? 'rgba(var(--primary-rgb), 0.08)' : 'rgba(var(--text-main-rgb), 0.05)', 
+                  background: showUserDropdown ? 'rgba(var(--primary-rgb), 0.08)' : 'rgba(var(--text-main-rgb), 0.05)',
                   borderRadius: '24px', padding: '4px 10px 4px 4px',
                   transition: 'all 0.25s var(--ease-smooth)',
                   border: '1px solid transparent',
@@ -407,8 +407,8 @@ const TopNavbar = () => {
                     <div style={{ fontWeight: 600, fontSize: '14px' }}>{user?.username || 'User'}</div>
                     <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>{user?.email || ''}</div>
                   </div>
-                  <button 
-                    className="button-ghost dropdown-item" 
+                  <button
+                    className="button-ghost dropdown-item"
                     style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: '8px', fontSize: '14px', marginBottom: '2px' }}
                     onClick={() => { setShowUserDropdown(false); navigate('/profile'); }}
                   >
@@ -416,8 +416,8 @@ const TopNavbar = () => {
                     My Profile
                   </button>
                   <div style={{ height: '1px', background: 'var(--surface-border)', margin: '4px 8px' }} />
-                  <button 
-                    className="button-ghost dropdown-item" 
+                  <button
+                    className="button-ghost dropdown-item"
                     style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: '8px', fontSize: '14px', color: '#FF3B30' }}
                     onClick={() => { setShowUserDropdown(false); logout(); navigate('/login'); }}
                   >

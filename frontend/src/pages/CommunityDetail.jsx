@@ -169,7 +169,7 @@ const CommunityDetail = () => {
             style={{ cursor: isOwner ? 'pointer' : 'default' }}
           >
             {community.avatarUrl ? (
-              <img src={`${import.meta.env.VITE_API_URL}${community.avatarUrl}`} alt={community.name} />
+              <img src={community.avatarUrl} alt={community.name} />
             ) : (
               community.name.charAt(0).toUpperCase()
             )}
@@ -331,7 +331,7 @@ const CommunityDetail = () => {
                   <Link to={`/user/${memberId}`} style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', color: 'inherit', flex: 1 }}>
                     <div className="member-avatar">
                       {memberAvatar ? (
-                        <img src={`${import.meta.env.VITE_API_URL}${memberAvatar}`} alt={memberName} />
+                        <img src={memberAvatar} alt={memberName} />
                       ) : null}
                     </div>
                     <div style={{ flex: 1 }}>
