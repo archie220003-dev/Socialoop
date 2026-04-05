@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import cloudinary from '../../cloudinary.js';
 
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET || 'nexa-secret', { expiresIn: '7d' });
@@ -73,7 +74,8 @@ export const updateProfile = async (req, res) => {
 
     if (bio !== undefined) user.bio = bio;
     if (req.file) {
-      user.avatarUrl = req.file.path;
+      const result = await cloudinary.uploader.upload(req.file.path);
+      user.avatarUrl = result.secure_url;
     }
 
     await user.save();
