@@ -79,9 +79,9 @@ const Profile = () => {
 
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${localStorage.getItem("token")}`
         },
         body: formData
       });
@@ -382,7 +382,7 @@ const Profile = () => {
             {activeTab === 'reposts' && (
               reposts.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                   {reposts.map((post, idx) => (
+                  {reposts.map((post, idx) => (
                     <PostCard
                       key={post._id}
                       post={post}

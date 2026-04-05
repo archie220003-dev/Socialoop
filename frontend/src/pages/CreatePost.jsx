@@ -20,7 +20,7 @@ const CreatePost = () => {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/api/communities`);
         const data = await res.json();
-        const joined = data.filter(c => c.members?.some(m => 
+        const joined = data.filter(c => c.members?.some(m =>
           (typeof m === 'string' ? m : m._id) === user?._id
         ));
         setCommunities(joined);
@@ -57,9 +57,9 @@ const CreatePost = () => {
 
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${localStorage.getItem("token")}`
         },
         body: formData
       });
@@ -95,9 +95,9 @@ const CreatePost = () => {
             <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               Post to
             </label>
-            <select 
-              className="input" 
-              value={communityId} 
+            <select
+              className="input"
+              value={communityId}
               onChange={(e) => setCommunityId(e.target.value)}
               style={{ marginBottom: 0, cursor: 'pointer' }}
             >
@@ -112,17 +112,17 @@ const CreatePost = () => {
 
           {/* Title */}
           <div style={{ marginBottom: '16px' }}>
-            <input 
-              type="text" 
-              placeholder="An interesting title..." 
-              className="input" 
+            <input
+              type="text"
+              placeholder="An interesting title..."
+              className="input"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
-              style={{ 
-                marginBottom: 0, 
-                fontSize: '18px', 
-                fontWeight: 600, 
+              style={{
+                marginBottom: 0,
+                fontSize: '18px',
+                fontWeight: 600,
                 padding: '14px 16px',
                 background: 'transparent',
                 border: '1.5px solid var(--surface-border)'
@@ -132,24 +132,24 @@ const CreatePost = () => {
 
           {/* Body */}
           <div style={{ marginBottom: '16px', position: 'relative' }}>
-            <textarea 
-              placeholder="What's on your mind? Share your thoughts..." 
-              className="input" 
+            <textarea
+              placeholder="What's on your mind? Share your thoughts..."
+              className="input"
               value={body}
               onChange={(e) => setBody(e.target.value)}
-              style={{ 
-                minHeight: '140px', 
+              style={{
+                minHeight: '140px',
                 marginBottom: 0,
                 lineHeight: '1.7',
                 background: 'transparent',
                 border: '1.5px solid var(--surface-border)'
               }}
             />
-            <span style={{ 
-              position: 'absolute', 
-              bottom: '12px', 
-              right: '14px', 
-              fontSize: '12px', 
+            <span style={{
+              position: 'absolute',
+              bottom: '12px',
+              right: '14px',
+              fontSize: '12px',
               color: 'var(--text-muted)',
               opacity: 0.6
             }}>
@@ -161,8 +161,8 @@ const CreatePost = () => {
           <div style={{ marginBottom: '24px' }}>
             {!preview ? (
               <div className="file-upload-area">
-                <input 
-                  type="file" 
+                <input
+                  type="file"
                   onChange={handleFileChange}
                   accept="image/*,video/*"
                 />
@@ -177,7 +177,7 @@ const CreatePost = () => {
             ) : (
               <div style={{ position: 'relative', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
                 <img src={preview} alt="Preview" style={{ width: '100%', borderRadius: 'var(--radius)', maxHeight: '300px', objectFit: 'cover' }} />
-                <button 
+                <button
                   type="button"
                   onClick={clearMedia}
                   style={{
@@ -209,20 +209,20 @@ const CreatePost = () => {
 
           {/* Actions */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="button button-ghost"
               onClick={() => navigate(-1)}
             >
               Cancel
             </button>
-            <button 
-              type="submit" 
-              className="button" 
+            <button
+              type="submit"
+              className="button"
               disabled={submitting || !title.trim()}
-              style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
+              style={{
+                display: 'flex',
+                alignItems: 'center',
                 gap: '8px',
                 opacity: (!title.trim() || submitting) ? 0.5 : 1,
                 padding: '12px 28px'
