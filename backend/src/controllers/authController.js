@@ -73,7 +73,7 @@ export const updateProfile = async (req, res) => {
 
     if (bio !== undefined) user.bio = bio;
     if (req.file) {
-      user.avatarUrl = `/uploads/${req.file.filename}`;
+      user.avatarUrl = req.file.path;
     }
 
     await user.save();

@@ -6,7 +6,7 @@ import User from '../models/User.js';
 const deduplicateConversations = async (userId) => {
   try {
     const conversations = await Conversation.find({ participants: userId });
-    
+
     // Group conversations by participant pair
     const pairMap = new Map();
     for (const conv of conversations) {
@@ -15,7 +15,7 @@ const deduplicateConversations = async (userId) => {
         .map(p => p.toString())
         .sort()
         .join('-');
-      
+
       if (!pairMap.has(key)) {
         pairMap.set(key, []);
       }
@@ -59,15 +59,15 @@ const deduplicateConversations = async (userId) => {
 export const getConversations = async (req, res) => {
   try {
     const userId = req.user._id;
-    
+
     // Run deduplication first
     await deduplicateConversations(userId);
-    
+
     const conversations = await Conversation.find({ participants: userId })
       .populate('participants', 'username avatarUrl')
       .populate('lastMessage')
       .sort({ updatedAt: -1 });
-    
+
     res.send(conversations);
   } catch (err) {
     res.status(500).send({ error: err.message });
@@ -77,7 +77,7 @@ export const getConversations = async (req, res) => {
 export const getMessages = async (req, res) => {
   try {
     const { conversationId } = req.params;
-    
+
     // Verify user is in conversation
     const conversation = await Conversation.findById(conversationId);
     if (!conversation) return res.status(404).send({ error: 'Conversation not found' });
@@ -94,7 +94,7 @@ export const getMessages = async (req, res) => {
     const messages = await Message.find({ conversationId })
       .populate('sender', 'username avatarUrl')
       .sort({ createdAt: 1 });
-      
+
     res.send(messages);
   } catch (err) {
     res.status(500).send({ error: err.message });
@@ -108,13 +108,13 @@ export const getUnreadCount = async (req, res) => {
     if (!conversations.length) return res.send({ count: 0 });
 
     const convIds = conversations.map(c => c._id);
-    
+
     const count = await Message.countDocuments({
       conversationId: { $in: convIds },
       sender: { $ne: userId },
       read: false
     });
-    
+
     res.send({ count });
   } catch (err) {
     res.status(500).send({ error: err.message });
@@ -126,9 +126,9 @@ export const sendMessage = async (req, res) => {
     const { conversationId } = req.params;
     const { text } = req.body;
     let mediaUrl = null;
-    
+
     if (req.file) {
-      mediaUrl = `/uploads/${req.file.filename}`;
+      mediaUrl = req.file.path;
     }
 
     if (!text && !mediaUrl) {
@@ -149,7 +149,7 @@ export const sendMessage = async (req, res) => {
     });
 
     await message.save();
-    
+
     conversation.lastMessage = message._id;
     await conversation.save();
 
@@ -190,10 +190,10 @@ export const getOrCreateConversation = async (req, res) => {
     // Create if not exists
     if (!conversation) {
       // Sort participants for consistent ordering (pre-save hook also does this)
-      const sortedParticipants = [userId, targetUserId].sort((a, b) => 
+      const sortedParticipants = [userId, targetUserId].sort((a, b) =>
         a.toString().localeCompare(b.toString())
       );
-      
+
       conversation = new Conversation({
         participants: sortedParticipants
       });
@@ -211,7 +211,7 @@ export const getOrCreateConversation = async (req, res) => {
 export const deleteConversation = async (req, res) => {
   try {
     const { conversationId } = req.params;
-    
+
     // Verify user is in conversation
     const conversation = await Conversation.findById(conversationId);
     if (!conversation) return res.status(404).send({ error: 'Conversation not found' });
@@ -224,10 +224,10 @@ export const deleteConversation = async (req, res) => {
     // Delete all messages in the conversation
     const result = await Message.deleteMany({ conversationId });
     console.log(`Deleted ${result.deletedCount} messages for conversation ${conversationId}`);
-    
+
     // Delete the conversation itself
     await Conversation.findByIdAndDelete(conversationId);
-    
+
     res.send({ message: 'Conversation deleted successfully' });
   } catch (err) {
     console.error('Error deleting conversation:', err);

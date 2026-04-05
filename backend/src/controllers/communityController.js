@@ -12,12 +12,12 @@ export const createCommunity = async (req, res) => {
       members: [req.user._id]
     });
     await community.save();
-    
+
     // Add to user's communities
     const user = await User.findById(req.user._id);
     user.communities.push(community._id);
     await user.save();
-    
+
     res.status(201).send(community);
   } catch (error) {
     res.status(400).send({ error: error.message });
@@ -51,18 +51,18 @@ export const joinCommunity = async (req, res) => {
   try {
     const community = await Community.findById(req.params.id);
     if (!community) return res.status(404).send({ error: 'Community not found' });
-    
+
     if (!community.members.includes(req.user._id)) {
       community.members.push(req.user._id);
       await community.save();
     }
-    
+
     const user = await User.findById(req.user._id);
     if (!user.communities.includes(community._id)) {
       user.communities.push(community._id);
       await user.save();
     }
-    
+
     const populated = await Community.findById(community._id)
       .populate('owner', 'username avatarUrl')
       .populate('members', 'username avatarUrl');
@@ -106,7 +106,7 @@ export const updateCommunityAvatar = async (req, res) => {
     }
 
     if (req.file) {
-      community.avatarUrl = `/uploads/${req.file.filename}`;
+      community.avatarUrl = req.file.path;
       await community.save();
     }
 

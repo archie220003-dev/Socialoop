@@ -2,14 +2,14 @@ import mongoose from 'mongoose';
 
 const postSchema = new mongoose.Schema({
   author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  community: { type: mongoose.Schema.Types.ObjectId, ref: 'Community' }, // Optional, null if general feed
+  community: { type: mongoose.Schema.Types.ObjectId, ref: 'Community' },
   title: { type: String, required: true },
-  body: { type: String }, // Text content
-  mediaUrl: { type: String }, // Optional image/video link
+  body: { type: String },
+  mediaUrl: { type: String },
   upvotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   downvotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   repostedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  score: { type: Number, default: 0 }, // Used for algorithm ranking fallback
+  score: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -22,5 +22,8 @@ const commentSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-export const Post = mongoose.model('Post', postSchema);
-export const Comment = mongoose.model('Comment', commentSchema);
+const Post = mongoose.model('Post', postSchema);
+const Comment = mongoose.model('Comment', commentSchema);
+
+export default Post;
+export { Comment };
