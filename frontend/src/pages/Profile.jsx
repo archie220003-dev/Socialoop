@@ -121,8 +121,8 @@ const Profile = () => {
 
   const avatarBg = avatarPreview
     ? `url(${avatarPreview}) center/cover`
-    : user.avatarUrl
-      ? `url(${import.meta.env.VITE_API_URL}${user.avatarUrl}) center/cover`
+    : user.avatarUrl && user.avatarUrl.startsWith("http")
+      ? `url(${user.avatarUrl}) center/cover`
       : 'linear-gradient(135deg, #007AFF, #5AC8FA)';
 
   return (

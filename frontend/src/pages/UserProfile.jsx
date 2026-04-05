@@ -166,7 +166,7 @@ const UserProfile = () => {
               className="avatar"
               style={{
                 width: '100px', height: '100px', border: '4px solid var(--surface)',
-                background: targetUser.avatarUrl ? `url(${import.meta.env.VITE_API_URL}${targetUser.avatarUrl}) center/cover` : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
+                background: targetUser.avatarUrl && targetUser.avatarUrl.startsWith("http") ? `url(${targetUser.avatarUrl}) center/cover` : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
               }}
             ></div>
 

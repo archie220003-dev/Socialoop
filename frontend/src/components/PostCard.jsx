@@ -223,7 +223,7 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
           >
             <div style={{
               width: '20px', height: '20px', borderRadius: '50%',
-              background: repostedBy.avatarUrl
+              background: (repostedBy.avatarUrl && repostedBy.avatarUrl.startsWith("http"))
                 ? `url(${repostedBy.avatarUrl}) center/cover` : 'var(--primary)'
             }}></div>
             <span>{repostedBy._id === currentUserId ? 'You' : repostedBy.username}</span>
