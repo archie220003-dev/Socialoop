@@ -70,7 +70,6 @@ const Profile = () => {
   };
 
   const handleUpdate = async (e) => {
-    console.log(import.meta.env.VITE_API_URL);
     e.preventDefault();
     const formData = new FormData();
     formData.append('bio', bio);
@@ -88,15 +87,17 @@ const Profile = () => {
       });
       const data = await res.json();
       if (res.ok) {
+        console.log("SUCCESS RESPONSE:", data);
         login(data.user, localStorage.getItem('token'));
         setEditing(false);
         setAvatar(null);
         setAvatarPreview(null);
       } else {
-        alert(data.error);
+        console.log("ERROR RESPONSE:", data);
+        alert(data.error || "Request failed");
       }
     } catch (error) {
-      console.error(error);
+      console.error("FETCH ERROR:", error);
     }
   };
 
