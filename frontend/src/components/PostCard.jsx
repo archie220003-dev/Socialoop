@@ -241,8 +241,9 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
       <div className="post-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div onClick={goToProfile} style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
           <div className="avatar" style={{
-            background: post.author?.avatarUrl
-              ? `url(${post.author.avatarUrl}) center/cover` : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
+            background: post.author?.avatarUrl?.startsWith("http")
+              ? `url(${post.author.avatarUrl})`
+              : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
           }}></div>
           <div className="author-info">
             <h4 style={{ margin: 0, fontSize: '15px' }}>{post.author?.username || 'Unknown'}</h4>
@@ -315,7 +316,7 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
 
       {post.mediaUrl && (
         <img
-          src={post.mediaUrl}
+          src={post.mediaUrl?.startsWith("http") ? post.mediaUrl : ""}
           alt="Post content"
           className="post-image"
           onClick={(e) => {
@@ -422,7 +423,7 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
       {/* Truly Fullscreen Portal */}
       {isFullScreen && (
         <FullScreenPortal
-          src={post.mediaUrl}
+          src={post.mediaUrl?.startsWith("http") ? post.mediaUrl : ""}
           onClose={() => setIsFullScreen(false)}
         />
       )}
