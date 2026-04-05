@@ -223,7 +223,8 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
           >
             <div style={{
               width: '20px', height: '20px', borderRadius: '50%',
-              background: repostedBy.avatarUrl ? `url(${import.meta.env.VITE_API_URL}${repostedBy.avatarUrl}) center/cover` : 'var(--primary)'
+              background: repostedBy.avatarUrl
+                ? `url(${repostedBy.avatarUrl}) center/cover` : 'var(--primary)'
             }}></div>
             <span>{repostedBy._id === currentUserId ? 'You' : repostedBy.username}</span>
           </div>
@@ -421,7 +422,7 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
       {/* Truly Fullscreen Portal */}
       {isFullScreen && (
         <FullScreenPortal
-          src={`${import.meta.env.VITE_API_URL}${post.mediaUrl}`}
+          src={post.mediaUrl}
           onClose={() => setIsFullScreen(false)}
         />
       )}
