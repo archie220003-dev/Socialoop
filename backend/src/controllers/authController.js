@@ -23,6 +23,8 @@ export const register = async (req, res) => {
     const token = generateToken(user._id);
     res.status(201).send({ user: { _id: user._id, username: user.username, email: user.email, bio: user.bio, avatarUrl: user.avatarUrl, role: user.role, isBanned: user.isBanned }, token });
   } catch (error) {
+    console.error("FULL ERROR (register):", error);
+    console.error("STACK:", error.stack);
     res.status(400).send({ error: error.message });
   }
 };
@@ -51,6 +53,8 @@ export const login = async (req, res) => {
     const token = generateToken(user._id);
     res.send({ user: { _id: user._id, username: user.username, email: user.email, bio: user.bio, avatarUrl: user.avatarUrl, role: user.role, isBanned: user.isBanned }, token });
   } catch (error) {
+    console.error("FULL ERROR (login):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -73,6 +77,8 @@ export const getProfile = async (req, res) => {
       }
     });
   } catch (error) {
+    console.error("FULL ERROR (getProfile):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -102,6 +108,11 @@ export const updateProfile = async (req, res) => {
       }
     });
   } catch (error) {
+    console.log("UPDATE_PROFILE_REQ_USER:", req.user);
+    console.log("UPDATE_PROFILE_REQ_FILE:", req.file);
+    console.log("UPDATE_PROFILE_REQ_BODY:", req.body);
+    console.error("FULL ERROR (updateProfile):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };

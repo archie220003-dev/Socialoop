@@ -23,6 +23,8 @@ export const getUserProfile = async (req, res) => {
       }
     });
   } catch (error) {
+    console.error("FULL ERROR (getUserProfile):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -58,6 +60,8 @@ export const toggleFollow = async (req, res) => {
 
     res.send({ following: !isFollowing });
   } catch (error) {
+    console.error("FULL ERROR (toggleFollow):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };

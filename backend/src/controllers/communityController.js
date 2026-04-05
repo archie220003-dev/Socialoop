@@ -21,6 +21,8 @@ export const createCommunity = async (req, res) => {
 
     res.status(201).send(community);
   } catch (error) {
+    console.error("FULL ERROR (createCommunity):", error);
+    console.error("STACK:", error.stack);
     res.status(400).send({ error: error.message });
   }
 };
@@ -32,6 +34,8 @@ export const getCommunities = async (req, res) => {
       .populate('members', 'username avatarUrl');
     res.send(communities);
   } catch (error) {
+    console.error("FULL ERROR (getCommunities):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -44,6 +48,8 @@ export const getCommunityById = async (req, res) => {
     if (!community) return res.status(404).send({ error: 'Community not found' });
     res.send(community);
   } catch (error) {
+    console.error("FULL ERROR (getCommunityById):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -69,6 +75,8 @@ export const joinCommunity = async (req, res) => {
       .populate('members', 'username avatarUrl');
     res.send(populated);
   } catch (error) {
+    console.error("FULL ERROR (joinCommunity):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -92,6 +100,8 @@ export const leaveCommunity = async (req, res) => {
 
     res.send({ message: 'Left community' });
   } catch (error) {
+    console.error("FULL ERROR (leaveCommunity):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -117,6 +127,8 @@ export const updateCommunityAvatar = async (req, res) => {
       .populate('members', 'username avatarUrl');
     res.send(populated);
   } catch (error) {
+    console.error("FULL ERROR (updateCommunityAvatar):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -139,6 +151,8 @@ export const updateCommunity = async (req, res) => {
       .populate('members', 'username avatarUrl');
     res.send(populated);
   } catch (error) {
+    console.error("FULL ERROR (updateCommunity):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -172,6 +186,8 @@ export const removeMember = async (req, res) => {
       .populate('members', 'username avatarUrl');
     res.send(populated);
   } catch (error) {
+    console.error("FULL ERROR (removeMember):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -184,6 +200,8 @@ export const getCommunityPosts = async (req, res) => {
       .sort({ createdAt: -1 });
     res.send(posts);
   } catch (error) {
+    console.error("FULL ERROR (getCommunityPosts):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };

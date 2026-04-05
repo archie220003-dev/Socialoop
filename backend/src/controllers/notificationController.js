@@ -11,6 +11,8 @@ export const getNotifications = async (req, res) => {
 
     res.send(notifications);
   } catch (error) {
+    console.error("FULL ERROR (getNotifications):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -25,6 +27,8 @@ export const markAsRead = async (req, res) => {
     );
     res.send(notification);
   } catch (error) {
+    console.error("FULL ERROR (markAsRead):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -34,6 +38,8 @@ export const markAllAsRead = async (req, res) => {
     await Notification.updateMany({ recipient: req.user._id }, { isRead: true });
     res.send({ success: true });
   } catch (error) {
+    console.error("FULL ERROR (markAllAsRead):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };

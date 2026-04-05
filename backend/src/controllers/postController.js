@@ -18,6 +18,8 @@ export const getPostById = async (req, res) => {
       downvotes: post.downvotedBy?.length || 0
     });
   } catch (error) {
+    console.error("FULL ERROR (getPostById):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -51,6 +53,8 @@ export const createPost = async (req, res) => {
     await post.save();
     res.status(201).send(post);
   } catch (error) {
+    console.error("FULL ERROR (createPost):", error);
+    console.error("STACK:", error.stack);
     res.status(400).send({ error: error.message });
   }
 };
@@ -75,6 +79,8 @@ export const getFeed = async (req, res) => {
 
     res.send(formattedPosts);
   } catch (error) {
+    console.error("FULL ERROR (getFeed):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -98,6 +104,8 @@ export const getTrending = async (req, res) => {
     const trending = getTrendingPosts(formattedPosts, 5);
     res.send(trending);
   } catch (error) {
+    console.error("FULL ERROR (getTrending):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -130,6 +138,8 @@ export const upvotePost = async (req, res) => {
     await post.save();
     res.send(post);
   } catch (error) {
+    console.error("FULL ERROR (upvotePost):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -152,6 +162,8 @@ export const downvotePost = async (req, res) => {
     await post.save();
     res.send(post);
   } catch (error) {
+    console.error("FULL ERROR (downvotePost):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -193,6 +205,8 @@ export const addComment = async (req, res) => {
 
     res.status(201).send(comment);
   } catch (error) {
+    console.error("FULL ERROR (addComment):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -204,6 +218,8 @@ export const getComments = async (req, res) => {
       .sort({ createdAt: -1 });
     res.send(comments);
   } catch (error) {
+    console.error("FULL ERROR (getComments):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -235,6 +251,8 @@ export const toggleCommentLike = async (req, res) => {
     await comment.save();
     res.send(comment);
   } catch (error) {
+    console.error("FULL ERROR (toggleCommentLike):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -267,6 +285,8 @@ export const repostPost = async (req, res) => {
     await post.save();
     res.send({ reposted: !hasReposted, repostCount: post.repostedBy.length });
   } catch (error) {
+    console.error("FULL ERROR (repostPost):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -287,6 +307,8 @@ export const getUserPosts = async (req, res) => {
 
     res.send(formatted);
   } catch (error) {
+    console.error("FULL ERROR (getUserPosts):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -308,6 +330,8 @@ export const getUserComments = async (req, res) => {
 
     res.send(comments);
   } catch (error) {
+    console.error("FULL ERROR (getUserComments):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -328,6 +352,8 @@ export const getUserReposts = async (req, res) => {
 
     res.send(formatted);
   } catch (error) {
+    console.error("FULL ERROR (getUserReposts):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -350,6 +376,8 @@ export const toggleSavePost = async (req, res) => {
     await user.save();
     res.send({ saved: !isSaved });
   } catch (error) {
+    console.error("FULL ERROR (toggleSavePost):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -372,6 +400,8 @@ export const getSavedPosts = async (req, res) => {
 
     res.send(formattedPosts);
   } catch (error) {
+    console.error("FULL ERROR (getSavedPosts):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -393,6 +423,8 @@ export const deletePost = async (req, res) => {
 
     res.send({ success: true, message: 'Post and associated comments deleted.' });
   } catch (error) {
+    console.error("FULL ERROR (deletePost):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };
@@ -412,6 +444,8 @@ export const deleteComment = async (req, res) => {
     await Comment.deleteOne({ _id: comment._id });
     res.send({ success: true, message: 'Comment deleted.' });
   } catch (error) {
+    console.error("FULL ERROR (deleteComment):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };

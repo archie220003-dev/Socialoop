@@ -29,6 +29,8 @@ export const globalSearch = async (req, res) => {
     // Limit to 10 results max
     res.send(results.slice(0, 10));
   } catch (error) {
+    console.error("FULL ERROR (globalSearch):", error);
+    console.error("STACK:", error.stack);
     res.status(500).send({ error: error.message });
   }
 };

@@ -71,6 +71,8 @@ export const getConversations = async (req, res) => {
 
     res.send(conversations);
   } catch (err) {
+    console.error("FULL ERROR (getConversations):", err);
+    console.error("STACK:", err.stack);
     res.status(500).send({ error: err.message });
   }
 };
@@ -98,6 +100,8 @@ export const getMessages = async (req, res) => {
 
     res.send(messages);
   } catch (err) {
+    console.error("FULL ERROR (getMessages):", err);
+    console.error("STACK:", err.stack);
     res.status(500).send({ error: err.message });
   }
 };
@@ -118,6 +122,8 @@ export const getUnreadCount = async (req, res) => {
 
     res.send({ count });
   } catch (err) {
+    console.error("FULL ERROR (getUnreadCount):", err);
+    console.error("STACK:", err.stack);
     res.status(500).send({ error: err.message });
   }
 };
@@ -162,6 +168,8 @@ export const sendMessage = async (req, res) => {
 
     res.status(201).send(message);
   } catch (err) {
+    console.error("FULL ERROR (sendMessage):", err);
+    console.error("STACK:", err.stack);
     res.status(500).send({ error: err.message });
   }
 };
@@ -205,7 +213,8 @@ export const getOrCreateConversation = async (req, res) => {
 
     res.send(conversation);
   } catch (err) {
-    console.error('Error in getOrCreateConversation:', err);
+    console.error("FULL ERROR (getOrCreateConversation):", err);
+    console.error("STACK:", err.stack);
     res.status(500).send({ error: err.message });
   }
 };
@@ -232,7 +241,8 @@ export const deleteConversation = async (req, res) => {
 
     res.send({ message: 'Conversation deleted successfully' });
   } catch (err) {
-    console.error('Error deleting conversation:', err);
+    console.error("FULL ERROR (deleteConversation):", err);
+    console.error("STACK:", err.stack);
     res.status(500).send({ error: err.message });
   }
 };
