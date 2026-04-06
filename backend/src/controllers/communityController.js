@@ -118,10 +118,8 @@ export const updateCommunityAvatar = async (req, res) => {
 
     if (req.file) {
       const result = await uploadToCloudinary(req.file.buffer, 'communities');
-      console.log("CLOUDINARY RESULT:", result);
       community.avatar = result.secure_url;
       await community.save();
-      console.log("SAVED COMMUNITY:", community.avatar);
     }
 
     const populated = await Community.findById(community._id)

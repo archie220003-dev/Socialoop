@@ -1,11 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-console.log({
-  cloud: process.env.CLOUDINARY_CLOUD_NAME,
-  key: !!process.env.CLOUDINARY_API_KEY,
-  secret: !!process.env.CLOUDINARY_API_SECRET,
-});
 
 
 import express from 'express';
@@ -24,6 +19,7 @@ import notificationRoutes from './src/routes/notificationRoutes.js';
 
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import cloudinary from './src/utils/cloudinary.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -96,6 +92,18 @@ app.use('/api/notifications', notificationRoutes);
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send({ error: err.message });
+});
+
+app.get('/test-upload', async (req, res) => {
+  try {
+    const result = await cloudinary.uploader.upload(
+      'https://res.cloudinary.com/demo/image/upload/sample.jpg'
+    );
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(err);
+  }
 });
 
 httpServer.listen(PORT, () => {

@@ -136,7 +136,6 @@ export const sendMessage = async (req, res) => {
 
     if (req.file) {
       const result = await uploadToCloudinary(req.file.buffer, 'messages');
-      console.log("CLOUDINARY RESULT:", result);
       image = result.secure_url;
     }
 
@@ -158,7 +157,6 @@ export const sendMessage = async (req, res) => {
     });
 
     await message.save();
-    console.log("SAVED MESSAGE:", message.image);
 
     conversation.lastMessage = message._id;
     await conversation.save();

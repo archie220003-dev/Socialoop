@@ -31,7 +31,6 @@ export const createPost = async (req, res) => {
     let image = null;
     if (req.file) {
       const result = await uploadToCloudinary(req.file.buffer, 'posts');
-      console.log("CLOUDINARY RESULT:", result);
       image = result.secure_url;
     }
 
@@ -53,7 +52,6 @@ export const createPost = async (req, res) => {
     });
 
     await post.save();
-    console.log("SAVED POST:", post.image);
     return res.status(201).send(post);
   } catch (error) {
     console.error("FINAL ERROR (createPost):", error);
