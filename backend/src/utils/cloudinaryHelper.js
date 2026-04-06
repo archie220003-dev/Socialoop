@@ -1,7 +1,6 @@
 import cloudinary from './cloudinary.js';
-import streamifier from 'streamifier';
 
-export const uploadToCloudinary = (buffer, folder) => {
+export const uploadToCloudinary = (buffer, folder = 'avatars') => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       { folder },
@@ -11,6 +10,6 @@ export const uploadToCloudinary = (buffer, folder) => {
       }
     );
 
-    streamifier.createReadStream(buffer).pipe(stream);
+    stream.end(buffer);
   });
 };
