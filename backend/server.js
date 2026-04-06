@@ -1,5 +1,11 @@
 import dotenv from 'dotenv';
 dotenv.config();
+
+// server.js (after dotenv.config())
+import cloudinary from './src/utils/cloudinary.js';
+
+console.log("FINAL CONFIG:", cloudinary.config());
+
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
