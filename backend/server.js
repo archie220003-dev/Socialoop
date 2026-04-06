@@ -1,14 +1,11 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import cloudinary from './src/utils/cloudinary.js';
-
 console.log({
   cloud: process.env.CLOUDINARY_CLOUD_NAME,
   key: !!process.env.CLOUDINARY_API_KEY,
   secret: !!process.env.CLOUDINARY_API_SECRET,
 });
-
 
 console.log("FINAL CONFIG:", cloudinary.config());
 
