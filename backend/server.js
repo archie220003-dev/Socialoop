@@ -7,7 +7,6 @@ console.log({
   secret: !!process.env.CLOUDINARY_API_SECRET,
 });
 
-console.log("FINAL CONFIG:", cloudinary.config());
 
 import express from 'express';
 import mongoose from 'mongoose';
