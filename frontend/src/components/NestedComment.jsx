@@ -43,7 +43,7 @@ const NestedComment = ({ comment, allComments, onReplySubmit, onLikeToggle, onDe
             
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
               <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{timeAgo(comment.createdAt)}</span>
-              {user?._id === comment.author?._id && (
+              {(user?._id === comment.author?._id || user?.role === 'admin') && (
                 <div style={{ position: 'relative' }}>
                   <button 
                     onClick={() => setShowConfirmDelete(!showConfirmDelete)}

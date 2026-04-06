@@ -261,7 +261,7 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
           </div>
         </div>
 
-        {currentUserId === post.author?._id && (
+        {(currentUserId === post.author?._id || user?.role === 'admin') && (
           <div style={{ position: 'relative' }}>
             <button
               onClick={(e) => { e.stopPropagation(); setShowConfirmDelete(!showConfirmDelete); }}

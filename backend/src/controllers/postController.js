@@ -418,7 +418,9 @@ export const deletePost = async (req, res) => {
     }
 
     const authorId = post.author._id ? post.author._id.toString() : post.author.toString();
-    if (authorId !== req.user._id.toString()) {
+    const isAdmin = req.user.role === 'admin';
+
+    if (authorId !== req.user._id.toString() && !isAdmin) {
       return res.status(403).send({ error: 'Unauthorized to delete this post' });
     }
 
@@ -441,7 +443,9 @@ export const deleteComment = async (req, res) => {
     }
 
     const authorId = comment.author._id ? comment.author._id.toString() : comment.author.toString();
-    if (authorId !== req.user._id.toString()) {
+    const isAdmin = req.user.role === 'admin';
+
+    if (authorId !== req.user._id.toString() && !isAdmin) {
       return res.status(403).send({ error: 'Unauthorized to delete this comment' });
     }
 
