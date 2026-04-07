@@ -43,7 +43,9 @@ export const register = async (req, res) => {
         bio: user.bio,
         avatar: user.avatar,
         role: user.role,
-        isBanned: user.isBanned
+        isBanned: user.isBanned,
+        followers: user.followers || [],
+        following: user.following || []
       },
       token
     });
@@ -90,7 +92,9 @@ export const login = async (req, res) => {
         bio: user.bio,
         avatar: user.avatar,
         role: user.role,
-        isBanned: user.isBanned
+        isBanned: user.isBanned,
+        followers: user.followers || [],
+        following: user.following || []
       },
       token
     });
@@ -125,7 +129,9 @@ export const getProfile = async (req, res) => {
         avatar: user.avatar,
         role: user.role,
         isBanned: user.isBanned,
-        communities: user.communities
+        communities: user.communities,
+        followers: user.followers || [],
+        following: user.following || []
       }
     });
 
@@ -167,7 +173,9 @@ export const updateProfile = async (req, res) => {
         username: user.username,
         email: user.email,
         bio: user.bio,
-        avatar: user.avatar
+        avatar: user.avatar,
+        followers: user.followers || [],
+        following: user.following || []
       }
     });
 

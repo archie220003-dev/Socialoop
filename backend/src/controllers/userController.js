@@ -18,7 +18,9 @@ export const getUserProfile = async (req, res) => {
         avatar: user.avatar,
         role: user.role,
         isBanned: user.isBanned,
-        communities: user.communities
+        communities: user.communities,
+        followers: user.followers || [],
+        following: user.following || []
       }
     });
   } catch (error) {
