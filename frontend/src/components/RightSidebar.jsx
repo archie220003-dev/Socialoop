@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
+import AdminBadge from './AdminBadge';
 
 const RightSidebar = () => {
   const { user } = useContext(AuthContext);
@@ -26,7 +27,7 @@ const RightSidebar = () => {
           <div className="mini-profile-bg"></div>
           <div style={{ padding: '0 16px 16px', marginTop: '-24px', textAlign: 'center' }}>
             <div
-              className="avatar"
+              className={`avatar ${user.role === 'admin' ? 'admin-avatar-glow' : ''}`}
               style={{
                 width: '64px', height: '64px', margin: '0 auto 12px', border: '3px solid var(--surface)',
                 background: user.avatar 
@@ -34,7 +35,10 @@ const RightSidebar = () => {
                   : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
               }}
             ></div>
-            <h4 style={{ fontWeight: 600, fontSize: '16px', margin: '0 0 4px 0' }}>{user.username}</h4>
+            <h4 style={{ fontWeight: 600, fontSize: '16px', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} className={user.role === 'admin' ? 'admin-username' : ''}>
+              {user.username}
+              {user.role === 'admin' && <AdminBadge showText={false} />}
+            </h4>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
               {user.bio || 'New member of Socialoop'}
             </p>

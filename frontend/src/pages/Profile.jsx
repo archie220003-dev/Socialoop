@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { FileText, MessageCircle, Repeat2, ArrowUp, ArrowDown, Clock, ChevronRight, Camera, Edit3, Check, X } from 'lucide-react';
 import PostCard from '../components/PostCard';
+import AdminBadge from '../components/AdminBadge';
 
 const timeAgo = (dateStr) => {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -150,6 +151,7 @@ const Profile = () => {
                   background: avatarBg,
                   boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
                 }}
+                className={user.role === 'admin' ? 'admin-avatar-glow' : ''}
               ></div>
               {editing && (
                 <label style={{
@@ -185,7 +187,10 @@ const Profile = () => {
 
           {/* User info */}
           <div style={{ marginTop: '20px' }}>
-            <h1 style={{ margin: 0, fontSize: '28px', fontWeight: 800 }}>{user.username}</h1>
+            <h1 style={{ margin: 0, fontSize: '28px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '12px' }} className={user.role === 'admin' ? 'admin-username' : ''}>
+              {user.username}
+              {user.role === 'admin' && <AdminBadge style={{ padding: '4px 12px', fontSize: '13px' }} />}
+            </h1>
 
             {editing ? (
               <textarea

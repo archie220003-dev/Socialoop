@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Search, Bell, Sun, Moon, Monitor, LogOut, UserCircle2, ChevronDown, User, Settings } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import AdminBadge from './AdminBadge';
 import io from 'socket.io-client';
 import logoBlack from '../assets/logo-black.png';
 import logoWhite from '../assets/logo-white.png';
@@ -242,7 +243,10 @@ const TopNavbar = () => {
                 }} style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', transition: 'background 0.2s' }} className="search-result-item">
                   <div className="avatar" style={{ width: '32px', height: '32px', backgroundImage: (result.avatar && result.avatar.startsWith("http")) ? `url(${result.avatar})` : (result.coverUrl && result.coverUrl.startsWith("http") ? `url(${result.coverUrl})` : 'linear-gradient(135deg, #007AFF, #5AC8FA)') }}></div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 600, fontSize: '14px' }}>{result.title}</div>
+                    <div style={{ fontWeight: 600, fontSize: '14px', display: 'flex', alignItems: 'center', gap: '4px' }} className={result.role === 'admin' ? 'admin-username' : ''}>
+                      {result.title}
+                      {result.role === 'admin' && <AdminBadge showText={false} />}
+                    </div>
                     <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{result.type}</div>
                   </div>
                 </div>
@@ -404,7 +408,10 @@ const TopNavbar = () => {
                 <div className="glass glass-dropdown dropdown-animate" style={{ position: 'absolute', top: '100%', right: 0, width: '200px', marginTop: '12px', borderRadius: '14px', padding: '6px', zIndex: 110 }}>
                   {/* User info header */}
                   <div style={{ padding: '12px 12px 10px', borderBottom: '1px solid var(--surface-border)', marginBottom: '4px' }}>
-                    <div style={{ fontWeight: 600, fontSize: '14px' }}>{user?.username || 'User'}</div>
+                    <div style={{ fontWeight: 600, fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }} className={user?.role === 'admin' ? 'admin-username' : ''}>
+                      {user?.username || 'User'}
+                      {user?.role === 'admin' && <AdminBadge showText={false} />}
+                    </div>
                     <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>{user?.email || ''}</div>
                   </div>
                   <button

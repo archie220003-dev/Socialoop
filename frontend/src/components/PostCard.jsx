@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import NestedComment from './NestedComment';
+import AdminBadge from './AdminBadge';
 import { useTilt } from '../hooks/useTilt';
 
 const timeAgo = (dateStr) => {
@@ -240,13 +241,16 @@ const PostCard = ({ post, onUpvote, onDownvote, onDeletePost, repostedBy, index 
       )}
       <div className="post-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div onClick={goToProfile} style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-          <div className="avatar" style={{
+          <div className={`avatar ${post.author?.role === 'admin' ? 'admin-avatar-glow' : ''}`} style={{
             background: post.author?.avatar?.startsWith("http")
               ? `url(${post.author.avatar})`
               : 'linear-gradient(135deg, #007AFF, #5AC8FA)'
           }}></div>
           <div className="author-info">
-            <h4 style={{ margin: 0, fontSize: '15px' }}>{post.author?.username || 'Unknown'}</h4>
+            <h4 style={{ margin: 0, fontSize: '15px', display: 'flex', alignItems: 'center' }} className={post.author?.role === 'admin' ? 'admin-username' : ''}>
+              {post.author?.username || 'Unknown'}
+              {post.author?.role === 'admin' && <AdminBadge />}
+            </h4>
             <p style={{ margin: 0, marginTop: '2px', fontSize: '13px' }}>
               {post.community?.name && (
                 <span

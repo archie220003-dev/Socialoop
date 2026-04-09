@@ -2,6 +2,7 @@ import { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { ArrowUp, CornerDownRight, Send, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import AdminBadge from './AdminBadge';
 
 const NestedComment = ({ comment, allComments, onReplySubmit, onLikeToggle, onDeleteComment }) => {
   const { user } = useContext(AuthContext);
@@ -39,7 +40,10 @@ const NestedComment = ({ comment, allComments, onReplySubmit, onLikeToggle, onDe
       <div style={{ flex: 1 }}>
         <div style={{ background: 'var(--surface)', padding: '10px 14px', borderRadius: '12px', border: '1px solid var(--surface-border)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-            <Link to={`/user/${comment.author?._id}`} style={{ fontWeight: 600, fontSize: '13px', textDecoration: 'none', color: 'inherit' }}>{comment.author?.username}</Link>
+            <Link to={`/user/${comment.author?._id}`} style={{ fontWeight: 600, fontSize: '13px', textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center' }} className={comment.author?.role === 'admin' ? 'admin-username' : ''}>
+              {comment.author?.username}
+              {comment.author?.role === 'admin' && <AdminBadge style={{ marginLeft: '4px' }} />}
+            </Link>
             
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
               <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{timeAgo(comment.createdAt)}</span>
