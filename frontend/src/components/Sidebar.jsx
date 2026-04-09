@@ -1,4 +1,4 @@
-import { Home, Users, PlusSquare, User, LogOut, MessageSquare, LogIn, Bookmark, Info, ArrowRight } from 'lucide-react';
+import { Home, Users, PlusSquare, User, LogOut, MessageSquare, LogIn, Bookmark, Info } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
@@ -97,23 +97,6 @@ const Sidebar = () => {
           </Link>
         ))}
       </nav>
-
-      {/* About the Creator Section */}
-      <div className="creator-card">
-        <div className="creator-avatar-mini">AS</div>
-        <div className="creator-name">Archit Sharma</div>
-        <p className="creator-blurb">
-          Full-time student, part-time code-wizard, building Socialoop for the resume and the glory. 🚀
-        </p>
-        <a 
-          href="https://architsharma.vercel.app" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="portfolio-link"
-        >
-          View Portfolio <ArrowRight size={14} />
-        </a>
-      </div>
     </aside>
   );
 };

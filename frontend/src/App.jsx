@@ -16,7 +16,6 @@ import Banned from './pages/Banned';
 import Messages from './pages/Messages';
 import Saved from './pages/Saved';
 import PostDetail from './pages/PostDetail';
-import About from './pages/About';
 import TopNavbar from './components/TopNavbar';
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -88,7 +87,6 @@ const AppLayout = () => {
                 <Route path="/create" element={<PrivateRoute><CreatePost /></PrivateRoute>} />
                 <Route path="/messages" element={<PrivateRoute><Messages /></PrivateRoute>} />
                 <Route path="/saved" element={<PrivateRoute><Saved /></PrivateRoute>} />
-                <Route path="/about" element={<About />} />
               </Routes>
             </main>
             <RightSidebar />
