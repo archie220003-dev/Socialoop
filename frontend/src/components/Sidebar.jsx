@@ -1,4 +1,4 @@
-import { Home, Users, PlusSquare, User, LogOut, MessageSquare, LogIn, Bookmark } from 'lucide-react';
+import { Home, Users, PlusSquare, User, LogOut, MessageSquare, LogIn, Bookmark, Info } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
@@ -72,6 +72,9 @@ const Sidebar = () => {
       { icon: <User size={22} />, label: 'Profile', path: '/profile' }
     );
   }
+
+  // Always show About link
+  mainLinks.push({ icon: <Info size={22} />, label: 'About', path: '/about' });
 
   return (
     <aside className="sidebar glass" style={{ paddingTop: '24px' }}>
