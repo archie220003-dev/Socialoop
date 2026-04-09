@@ -97,6 +97,22 @@ const Sidebar = () => {
           </Link>
         ))}
       </nav>
+
+      {/* Humorous About Blurb */}
+      <div style={{ 
+        marginTop: 'auto', 
+        padding: '20px', 
+        borderTop: '1px solid var(--surface-border)',
+        fontSize: '11px',
+        color: 'var(--text-muted)',
+        lineHeight: '1.6'
+      }}>
+        <p>
+          Crafted by a sleep-deprived student building projects for his resume. 
+          10% code, 90% hope, and just enough caffeine to keep the servers running. 
+          If you're a recruiter, please look at the code before the bugs look at you.
+        </p>
+      </div>
     </aside>
   );
 };
