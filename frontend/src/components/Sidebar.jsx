@@ -31,15 +31,15 @@ const Sidebar = () => {
   useEffect(() => {
     if (user) {
       fetchUnreadCount();
-      
+
       // Setup socket for real-time unread notifications
       socket = io(ENDPOINT);
       socket.emit('setup', user);
-      
+
       socket.on('message recieved', (newMessage) => {
         // If not from us, then it's unread
         if (newMessage.sender._id !== user._id) {
-           fetchUnreadCount();
+          fetchUnreadCount();
         }
       });
 
@@ -88,31 +88,15 @@ const Sidebar = () => {
             {link.icon}
             <span className="nav-label">{link.label}</span>
             {link.label === 'Messages' && unreadCount > 0 && (
-              <span className="unread-dot" style={{ 
-                width: '8px', height: '8px', background: '#FF3B30', 
-                borderRadius: '50%', position: 'absolute', 
-                right: '25px', top: '16px', boxShadow: '0 0 8px rgba(255, 59, 48, 0.4)' 
+              <span className="unread-dot" style={{
+                width: '8px', height: '8px', background: '#FF3B30',
+                borderRadius: '50%', position: 'absolute',
+                right: '25px', top: '16px', boxShadow: '0 0 8px rgba(255, 59, 48, 0.4)'
               }}></span>
             )}
           </Link>
         ))}
       </nav>
-
-      {/* Humorous About Blurb */}
-      <div style={{ 
-        marginTop: 'auto', 
-        padding: '20px', 
-        borderTop: '1px solid var(--surface-border)',
-        fontSize: '11px',
-        color: 'var(--text-muted)',
-        lineHeight: '1.6'
-      }}>
-        <p>
-          Crafted by a sleep-deprived student building projects for his resume. 
-          10% code, 90% hope, and just enough caffeine to keep the servers running. 
-          If you're a recruiter, please look at the code before the bugs look at you.
-        </p>
-      </div>
     </aside>
   );
 };
