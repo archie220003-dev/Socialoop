@@ -1,4 +1,4 @@
-import { Info, Code, User, ExternalLink, GraduationCap, Github } from 'lucide-react';
+import { Info, Code, User, ExternalLink, GraduationCap, GitHub } from 'lucide-react';
 
 const About = () => {
   return (
@@ -81,7 +81,7 @@ const About = () => {
                     <User size={18} /> Portfolio <ExternalLink size={14} />
                   </a>
                   <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="button button-outline" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Github size={18} /> GitHub
+                    <GitHub size={18} /> GitHub
                   </a>
                 </div>
               </div>
