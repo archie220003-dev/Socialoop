@@ -16,7 +16,7 @@ const Register = () => {
   const [showTermsError, setShowTermsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login, browseAnonymously } = useContext(AuthContext);
+  const { browseAnonymously } = useContext(AuthContext);
   const { theme, setTheme, activeTheme } = useTheme();
   const navigate = useNavigate();
 
@@ -85,8 +85,8 @@ const Register = () => {
       });
       const data = await res.json();
       if (res.ok) {
-        login(data.user, data.token);
-        navigate('/');
+        // Redirect to OTP verification — account is not active until verified
+        navigate(`/verify-otp?email=${encodeURIComponent(email)}&type=register`);
       } else {
         alert(data.error);
       }

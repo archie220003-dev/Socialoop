@@ -18,6 +18,10 @@ export const auth = async (req, res, next) => {
       return res.status(401).send({ error: 'User not found' });
     }
 
+    if (user.isVerified === false) {
+      return res.status(401).send({ error: 'Please verify your email address' });
+    }
+
     if (user.isBanned) {
       return res.status(403).send({ error: 'Account has been banned' });
     }

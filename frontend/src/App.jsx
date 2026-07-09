@@ -6,6 +6,7 @@ import AppleLoader from './components/AppleLoader';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import VerifyOtp from './pages/VerifyOtp';
 import Profile from './pages/Profile';
 import Communities from './pages/Communities';
 import CommunityDetail from './pages/CommunityDetail';
@@ -28,7 +29,7 @@ const PrivateRoute = ({ children }) => {
 const AppLayout = () => {
   const { user, isAnonymous } = useContext(AuthContext);
   const location = useLocation();
-  const authRoutes = ['/login', '/register', '/banned'];
+  const authRoutes = ['/login', '/register', '/banned', '/verify-otp'];
   const isAuthPage = authRoutes.includes(location.pathname);
 
   const [showBoot, setShowBoot] = useState(true);
@@ -51,6 +52,7 @@ const AppLayout = () => {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/verify-otp" element={<VerifyOtp />} />
             <Route path="/banned" element={<Banned />} />
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>

@@ -12,6 +12,8 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [otpMode, setOtpMode] = useState(false); // Toggle between password and OTP login
+  const [otpSent, setOtpSent] = useState(false);
   
   const { login, browseAnonymously } = useContext(AuthContext);
   const { theme, setTheme, activeTheme } = useTheme();
@@ -64,6 +66,7 @@ const Login = () => {
     setTilt({ x: 0, y: 0 }); // Reset to flat
   };
 
+  // Password Login Handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -78,7 +81,10 @@ const Login = () => {
         login(data.user, data.token);
         navigate('/');
       } else {
-        if (res.status === 403 && data.error === 'Account has been banned') {
+        if (res.status === 401 && data.unverified) {
+          // Account exists but is unverified — backend already sent a new OTP
+          navigate(`/verify-otp?email=${encodeURIComponent(data.email)}&type=register`);
+        } else if (res.status === 403 && data.error === 'Account has been banned') {
           navigate('/banned');
         } else {
           alert(data.error);
@@ -87,6 +93,34 @@ const Login = () => {
     } catch (error) {
       console.error(error);
       alert('Login failed. Please check your connection.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // OTP Login Request Handler
+  const handleOtpRequest = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login-otp-request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        navigate(`/verify-otp?email=${encodeURIComponent(data.email)}&type=${data.type}`);
+      } else {
+        if (res.status === 403) {
+          navigate('/banned');
+        } else {
+          alert(data.error);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Failed to send OTP. Please check your connection.');
     } finally {
       setIsLoading(false);
     }
@@ -212,76 +246,138 @@ const Login = () => {
               <p style={{ margin: '16px 0 0 0', color: 'var(--text-muted)', fontSize: '18px', fontWeight: 500, opacity: 0.8, transform: 'translateZ(40px)' }}>Sign in to connect and share</p>
             </div>
 
-            {/* Login Form */}
-            <form onSubmit={handleSubmit} style={{ width: '100%', transform: 'translateZ(40px)' }}>
-              <div className="staggered-item" style={{ animationDelay: '0.2s' }}>
-                <input 
-                  type="email" 
-                  placeholder="Email" 
-                  className="input login-input-group shadow-input" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)' }}
-                  required
-                  disabled={isLoading}
-                />
-              </div>
-              <div className="staggered-item" style={{ animationDelay: '0.25s', position: 'relative' }}>
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  placeholder="Password" 
-                  className="input login-input-group shadow-input" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  style={{ 
-                    background: 'rgba(255,255,255,0.03)', 
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    paddingRight: '48px' 
-                  }}
-                  required
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: 'absolute',
-                    right: '12px',
-                    top: '12px',
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--text-muted)',
-                    cursor: 'pointer',
-                    padding: '4px',
-                    zIndex: 2,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-              <div className="staggered-item" style={{ animationDelay: '0.3s' }}>
-                <button 
-                  type="submit" 
-                  className="button login-btn-3d" 
-                  disabled={isLoading}
-                  style={{ 
-                    width: '100%', padding: '14px', fontSize: '16px', marginTop: '12px', 
-                    background: 'var(--primary)', fontWeight: 700,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
-                  }}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 size={20} className="spinner" />
-                      Logging in...
-                    </>
-                  ) : 'Log In'}
-                </button>
-              </div>
-            </form>
+            {/* Mode Toggle */}
+            <div className="staggered-item" style={{ animationDelay: '0.15s', display: 'flex', width: '100%', borderRadius: '12px', background: 'rgba(var(--text-main-rgb), 0.05)', padding: '4px', marginBottom: '20px', gap: '4px', transform: 'translateZ(40px)' }}>
+              <button
+                type="button"
+                onClick={() => { setOtpMode(false); setOtpSent(false); }}
+                style={{
+                  flex: 1, padding: '10px', borderRadius: '9px', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '14px', transition: 'all 0.2s',
+                  background: !otpMode ? 'var(--surface)' : 'transparent',
+                  color: !otpMode ? 'var(--text-main)' : 'var(--text-muted)',
+                  boxShadow: !otpMode ? '0 1px 4px rgba(0,0,0,0.1)' : 'none'
+                }}
+              >
+                Password
+              </button>
+              <button
+                type="button"
+                onClick={() => setOtpMode(true)}
+                style={{
+                  flex: 1, padding: '10px', borderRadius: '9px', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '14px', transition: 'all 0.2s',
+                  background: otpMode ? 'var(--surface)' : 'transparent',
+                  color: otpMode ? 'var(--text-main)' : 'var(--text-muted)',
+                  boxShadow: otpMode ? '0 1px 4px rgba(0,0,0,0.1)' : 'none'
+                }}
+              >
+                Login with OTP
+              </button>
+            </div>
+
+            {/* Password Login Form */}
+            {!otpMode && (
+              <form onSubmit={handleSubmit} style={{ width: '100%', transform: 'translateZ(40px)' }}>
+                <div className="staggered-item" style={{ animationDelay: '0.2s' }}>
+                  <input 
+                    type="email" 
+                    placeholder="Email" 
+                    className="input login-input-group shadow-input" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className="staggered-item" style={{ animationDelay: '0.25s', position: 'relative' }}>
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    placeholder="Password" 
+                    className="input login-input-group shadow-input" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    style={{ 
+                      background: 'rgba(255,255,255,0.03)', 
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      paddingRight: '48px' 
+                    }}
+                    required
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute', right: '12px', top: '12px',
+                      background: 'none', border: 'none', color: 'var(--text-muted)',
+                      cursor: 'pointer', padding: '4px', zIndex: 2,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+                <div className="staggered-item" style={{ animationDelay: '0.3s' }}>
+                  <button 
+                    type="submit" 
+                    className="button login-btn-3d" 
+                    disabled={isLoading}
+                    style={{ 
+                      width: '100%', padding: '14px', fontSize: '16px', marginTop: '12px', 
+                      background: 'var(--primary)', fontWeight: 700,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
+                    }}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 size={20} className="spinner" />
+                        Logging in...
+                      </>
+                    ) : 'Log In'}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* OTP Login Form */}
+            {otpMode && (
+              <form onSubmit={handleOtpRequest} style={{ width: '100%', transform: 'translateZ(40px)' }}>
+                <div className="staggered-item" style={{ animationDelay: '0.2s' }}>
+                  <input 
+                    type="email" 
+                    placeholder="Enter your email address" 
+                    className="input login-input-group shadow-input" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
+                <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '8px 0 0 4px', fontWeight: 500 }}>
+                  We'll send a one-time code to your email.
+                </p>
+                <div className="staggered-item" style={{ animationDelay: '0.25s' }}>
+                  <button 
+                    type="submit" 
+                    className="button login-btn-3d" 
+                    disabled={isLoading}
+                    style={{ 
+                      width: '100%', padding: '14px', fontSize: '16px', marginTop: '16px', 
+                      background: 'var(--primary)', fontWeight: 700,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
+                    }}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 size={20} className="spinner" />
+                        Sending OTP...
+                      </>
+                    ) : 'Send OTP'}
+                  </button>
+                </div>
+              </form>
+            )}
 
             {/* Alternative Actions */}
             <div style={{ width: '100%', transform: 'translateZ(30px)' }}>
