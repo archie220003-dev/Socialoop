@@ -36,7 +36,7 @@ export const sendOtp = async (req, res) => {
     await Otp.findOneAndUpdate(
       { email },
       { otp, createdAt: new Date() },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' }
     );
 
     const mailResult = await sendOtpEmail(email, otp);

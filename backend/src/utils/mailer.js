@@ -6,7 +6,7 @@ export const sendOtpEmail = async (email, otp) => {
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
   const host = process.env.SMTP_HOST || 'smtp.gmail.com';
-  const port = parseInt(process.env.SMTP_PORT || '587');
+  const port = parseInt(process.env.SMTP_PORT || '465');
 
   if (!user || !pass) {
     console.log(`[SMTP CONFIG] Missing SMTP credentials in .env. Falling back to log-only.`);
