@@ -2,7 +2,7 @@ import { useState, useContext, useRef, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, Loader2, Check, Sun, Moon, Monitor, ChevronDown } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Check, Sun, Moon, Monitor, ChevronDown, User, Mail, Lock, KeyRound, ArrowLeft } from 'lucide-react';
 import logoBlack from '../assets/logo-black.png';
 import logoWhite from '../assets/logo-white.png';
 import './Login.css'; // Reuse common 3D styles
@@ -16,7 +16,15 @@ const Register = () => {
   const [showTermsError, setShowTermsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { browseAnonymously } = useContext(AuthContext);
+  // OTP Verification States
+  const [step, setStep] = useState(1); // 1: Info, 2: OTP Confirm
+  const [otpValues, setOtpValues] = useState(['', '', '', '', '', '']);
+  const [devOtp, setDevOtp] = useState('');
+  const [countdown, setCountdown] = useState(0);
+
+  const otpRefs = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
+
+  const { login, browseAnonymously } = useContext(AuthContext);
   const { theme, setTheme, activeTheme } = useTheme();
   const navigate = useNavigate();
 
@@ -42,6 +50,15 @@ const Register = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // OTP Countdown Timer
+  useEffect(() => {
+    let timer;
+    if (countdown > 0) {
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [countdown]);
+
   // 3D Tilt State
   const cardRef = useRef(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
@@ -66,13 +83,121 @@ const Register = () => {
     setTilt({ x: 0, y: 0 });
   };
 
-  const handleSubmit = async (e) => {
+  // Step 1: Send OTP
+  const handleSendOtp = async (e) => {
     e.preventDefault();
     if (!acceptedTerms) {
       setShowTermsError(true);
       return;
     }
     setShowTermsError(false);
+    setIsLoading(true);
+    setDevOtp('');
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/send-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, email })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        if (data.devOtp) {
+          setDevOtp(data.devOtp);
+        }
+        setStep(2);
+        setCountdown(60);
+      } else {
+        alert(data.error);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Failed to send verification code. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Resend OTP
+  const handleResendOtp = async () => {
+    if (countdown > 0) return;
+    setIsLoading(true);
+    setDevOtp('');
+    setOtpValues(['', '', '', '', '', '']);
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/send-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, email })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        if (data.devOtp) {
+          setDevOtp(data.devOtp);
+        }
+        setCountdown(60);
+        alert('Verification code resent successfully!');
+      } else {
+        alert(data.error);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Failed to resend verification code. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // OTP Input Changes
+  const handleOtpChange = (index, value) => {
+    if (value && !/^\d$/.test(value)) return;
+    const newOtp = [...otpValues];
+    newOtp[index] = value;
+    setOtpValues(newOtp);
+
+    if (value && index < 5) {
+      otpRefs[index + 1].current.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === 'Backspace') {
+      if (!otpValues[index] && index > 0) {
+        otpRefs[index - 1].current.focus();
+        const newOtp = [...otpValues];
+        newOtp[index - 1] = '';
+        setOtpValues(newOtp);
+      } else {
+        const newOtp = [...otpValues];
+        newOtp[index] = '';
+        setOtpValues(newOtp);
+      }
+    }
+  };
+
+  const handleOtpPaste = (e) => {
+    e.preventDefault();
+    const pasteData = e.clipboardData.getData('text').trim();
+    if (/^\d{6}$/.test(pasteData)) {
+      const chars = pasteData.split('');
+      setOtpValues(chars);
+      otpRefs[5].current.focus();
+    }
+  };
+
+  // Step 2: Final Submit / Register
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const otp = otpValues.join('');
+    if (otp.length !== 6) {
+      alert('Please enter the 6-digit verification code.');
+      return;
+    }
     setIsLoading(true);
 
     try {
@@ -81,12 +206,12 @@ const Register = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ username, email, password })
+        body: JSON.stringify({ username, email, password, otp })
       });
       const data = await res.json();
       if (res.ok) {
-        // Redirect to OTP verification — account is not active until verified
-        navigate(`/verify-otp?email=${encodeURIComponent(email)}&type=register`);
+        login(data.user, data.token);
+        navigate('/');
       } else {
         alert(data.error);
       }
@@ -204,131 +329,223 @@ const Register = () => {
         >
           <div className="login-content">
             {/* Brand Header */}
-            <div className="staggered-item" style={{ marginBottom: '32px', textAlign: 'center' }}>
+            <div className="staggered-item" style={{ marginBottom: '24px', textAlign: 'center' }}>
               <img 
                 src={activeTheme === 'dark' ? logoWhite : logoBlack} 
                 alt="Socialoop" 
-                style={{ height: '140px', width: 'auto', marginBottom: '8px', transform: 'translateZ(100px)' }} 
+                style={{ height: '100px', width: 'auto', marginBottom: '8px', transform: 'translateZ(100px)' }} 
               />
               <h1 className="login-title-glow" style={{ 
-                margin: 0, fontWeight: 900, fontSize: '60px', 
-                letterSpacing: '-2.5px', transform: 'translateZ(100px)',
+                margin: 0, fontWeight: 900, fontSize: '50px', 
+                letterSpacing: '-2px', transform: 'translateZ(100px)',
                 lineHeight: 1
               }}>Socialoop</h1>
-              <p style={{ margin: '16px 0 0 0', color: 'var(--text-muted)', fontSize: '18px', fontWeight: 500, opacity: 0.8, transform: 'translateZ(40px)' }}>Create your account today</p>
+              <p style={{ margin: '8px 0 0 0', color: 'var(--text-muted)', fontSize: '16px', fontWeight: 500, opacity: 0.8, transform: 'translateZ(40px)' }}>Create your account today</p>
             </div>
 
-            {/* Register Form */}
-            <form onSubmit={handleSubmit} style={{ width: '100%', transform: 'translateZ(40px)' }}>
-              <div className="staggered-item" style={{ animationDelay: '0.1s' }}>
-                <input 
-                  type="text" 
-                  placeholder="Username" 
-                  className="input login-input-group shadow-input" 
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)' }}
-                  required
-                  disabled={isLoading}
-                />
+            {/* Development OTP Banner Helper */}
+            {devOtp && (
+              <div className="debug-banner staggered-item">
+                <KeyRound size={16} />
+                <span>Development OTP: <strong>{devOtp}</strong></span>
               </div>
-              <div className="staggered-item" style={{ animationDelay: '0.15s' }}>
-                <input 
-                  type="email" 
-                  placeholder="Email" 
-                  className="input login-input-group shadow-input" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)' }}
-                  required
-                  disabled={isLoading}
-                />
-              </div>
-              <div className="staggered-item" style={{ animationDelay: '0.2s', position: 'relative' }}>
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  placeholder="Password" 
-                  className="input login-input-group shadow-input" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  style={{ 
-                    background: 'rgba(255,255,255,0.03)', 
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    paddingRight: '48px' 
-                  }}
-                  required
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: 'absolute',
-                    right: '12px',
-                    top: '12px',
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--text-muted)',
-                    cursor: 'pointer',
-                    padding: '4px',
-                    zIndex: 2,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
+            )}
 
-              {/* Terms Checkbox */}
-              <div className="staggered-item" style={{ animationDelay: '0.25s' }}>
-                <label className="checkbox-container">
-                  <input 
-                    type="checkbox" 
-                    checked={acceptedTerms}
-                    onChange={(e) => {
-                      setAcceptedTerms(e.target.checked);
-                      if (e.target.checked) setShowTermsError(false);
-                    }}
-                    style={{ display: 'none' }}
-                  />
-                  <div className="checkbox-custom">
-                    {acceptedTerms && <Check size={14} color="white" />}
-                  </div>
-                  <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 500 }}>
-                    I accept the <span style={{ color: 'var(--primary)', fontWeight: 600 }}>Terms & Conditions</span>
-                  </span>
-                </label>
-                {showTermsError && (
-                  <p className="checkbox-error">Please acknowledge the terms and conditions</p>
-                )}
-              </div>
+            {/* Two-step sliding form carousel */}
+            <div className="slider-outer-container">
+              <div className={`step-container ${step === 2 ? 'show-otp' : 'show-form'}`}>
+                
+                {/* STEP 1: Details */}
+                <div className="form-step-wrapper step-1">
+                  <form onSubmit={handleSendOtp} style={{ width: '100%' }}>
+                    {/* Username Input */}
+                    <div className="input-field-wrapper staggered-item" style={{ animationDelay: '0.1s' }}>
+                      <input 
+                        type="text" 
+                        id="reg-username"
+                        placeholder=" " 
+                        className="login-input shadow-input" 
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                        disabled={isLoading || step === 2}
+                      />
+                      <User size={18} className="input-icon" />
+                      <label htmlFor="reg-username" className="floating-label">Username</label>
+                      <span className="input-focus-line"></span>
+                    </div>
 
-              <div className="staggered-item" style={{ animationDelay: '0.3s' }}>
-                <button 
-                  type="submit" 
-                  className="button login-btn-3d" 
-                  disabled={isLoading}
-                  style={{ 
-                    width: '100%', padding: '14px', fontSize: '16px', marginTop: '20px', 
-                    background: 'var(--primary)', fontWeight: 700,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
-                  }}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 size={20} className="spinner" />
-                      Creating account...
-                    </>
-                  ) : 'Sign Up'}
-                </button>
+                    {/* Email Input */}
+                    <div className="input-field-wrapper staggered-item" style={{ animationDelay: '0.15s' }}>
+                      <input 
+                        type="email" 
+                        id="reg-email"
+                        placeholder=" " 
+                        className="login-input shadow-input" 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        disabled={isLoading || step === 2}
+                      />
+                      <Mail size={18} className="input-icon" />
+                      <label htmlFor="reg-email" className="floating-label">Email Address</label>
+                      <span className="input-focus-line"></span>
+                    </div>
+
+                    {/* Password Input */}
+                    <div className="input-field-wrapper staggered-item" style={{ animationDelay: '0.2s' }}>
+                      <input 
+                        type={showPassword ? "text" : "password"} 
+                        id="reg-password"
+                        placeholder=" " 
+                        className="login-input shadow-input" 
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        disabled={isLoading || step === 2}
+                        style={{ paddingRight: '48px' }}
+                      />
+                      <Lock size={18} className="input-icon" />
+                      <label htmlFor="reg-password" className="floating-label">Password</label>
+                      <span className="input-focus-line"></span>
+                      <button
+                        type="button"
+                        className="password-toggle-btn"
+                        onClick={() => setShowPassword(!showPassword)}
+                        disabled={step === 2}
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+
+                    {/* Terms Checkbox */}
+                    <div className="staggered-item" style={{ animationDelay: '0.25s', marginBottom: '16px' }}>
+                      <label className="checkbox-container">
+                        <input 
+                          type="checkbox" 
+                          checked={acceptedTerms}
+                          onChange={(e) => {
+                            setAcceptedTerms(e.target.checked);
+                            if (e.target.checked) setShowTermsError(false);
+                          }}
+                          style={{ display: 'none' }}
+                          disabled={isLoading || step === 2}
+                        />
+                        <div className="checkbox-custom">
+                          {acceptedTerms && <Check size={14} color="white" />}
+                        </div>
+                        <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 500 }}>
+                          I accept the <span style={{ color: 'var(--primary)', fontWeight: 600 }}>Terms & Conditions</span>
+                        </span>
+                      </label>
+                      {showTermsError && (
+                        <p className="checkbox-error">Please acknowledge the terms and conditions</p>
+                      )}
+                    </div>
+
+                    <div className="staggered-item" style={{ animationDelay: '0.3s' }}>
+                      <button 
+                        type="submit" 
+                        className="button login-btn-3d" 
+                        disabled={isLoading}
+                        style={{ 
+                          width: '100%', padding: '14px', fontSize: '16px', marginTop: '10px', 
+                          background: 'var(--primary)', fontWeight: 700,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
+                        }}
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 size={20} className="spinner" />
+                            Sending OTP...
+                          </>
+                        ) : 'Send Verification OTP'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                {/* STEP 2: OTP Verification */}
+                <div className="form-step-wrapper step-2">
+                  <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+                    <div className="otp-instructions">
+                      Please enter the 6-digit confirmation code we sent to <br />
+                      <strong style={{ color: 'var(--text-main)' }}>{email}</strong>
+                    </div>
+
+                    <div className="otp-input-container">
+                      {otpValues.map((val, idx) => (
+                        <input
+                          key={idx}
+                          ref={otpRefs[idx]}
+                          type="text"
+                          maxLength="1"
+                          className="otp-digit-input"
+                          value={val}
+                          onChange={(e) => handleOtpChange(idx, e.target.value)}
+                          onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                          onPaste={handleOtpPaste}
+                          required
+                          disabled={isLoading}
+                        />
+                      ))}
+                    </div>
+
+                    <div className="staggered-item" style={{ animationDelay: '0.1s' }}>
+                      <button 
+                        type="submit" 
+                        className="button login-btn-3d" 
+                        disabled={isLoading}
+                        style={{ 
+                          width: '100%', padding: '14px', fontSize: '16px', 
+                          background: 'var(--primary)', fontWeight: 700,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
+                        }}
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 size={20} className="spinner" />
+                            Verifying...
+                          </>
+                        ) : 'Confirm & Create Account'}
+                      </button>
+                    </div>
+
+                    <div className="otp-timer">
+                      {countdown > 0 ? (
+                        <span>Resend code in {countdown}s</span>
+                      ) : (
+                        <button 
+                          type="button" 
+                          className="otp-resend-btn" 
+                          onClick={handleResendOtp}
+                          disabled={isLoading}
+                        >
+                          Resend Verification Code
+                        </button>
+                      )}
+                    </div>
+
+                    <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                      <button 
+                        type="button" 
+                        onClick={() => setStep(1)} 
+                        className="otp-resend-btn"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '14px', textDecoration: 'none' }}
+                        disabled={isLoading}
+                      >
+                        <ArrowLeft size={14} /> Back to details
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
               </div>
-            </form>
+            </div>
 
             {/* Alternative Actions */}
             <div style={{ width: '100%', transform: 'translateZ(30px)' }}>
-              <div className="staggered-item" style={{ animationDelay: '0.4s', marginTop: '20px' }}>
+              <div className="staggered-item" style={{ animationDelay: '0.4s' }}>
                 <button 
                   type="button" 
                   className="button button-outline login-btn-3d" 
@@ -343,8 +560,8 @@ const Register = () => {
                 </button>
               </div>
 
-              <div className="staggered-item" style={{ animationDelay: '0.5s', marginTop: '24px' }}>
-                <p style={{ fontSize: '15px', color: 'var(--text-muted)', fontWeight: 500 }}>
+              <div className="staggered-item" style={{ animationDelay: '0.5s', marginTop: '24px', textAlign: 'center' }}>
+                <p style={{ fontSize: '15px', color: 'var(--text-muted)', fontWeight: 500, margin: 0 }}>
                   Already have an account? <Link to="/login" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 700, marginLeft: '4px' }}>Log in</Link>
                 </p>
               </div>

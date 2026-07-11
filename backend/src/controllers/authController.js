@@ -1,8 +1,8 @@
 import User from '../models/User.js';
+import Otp from '../models/Otp.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { uploadToCloudinary } from '../utils/cloudinaryHelper.js';
-import Otp from '../models/Otp.js';
 import { sendOtpEmail } from '../utils/mailer.js';
 
 if (!process.env.JWT_SECRET) {
@@ -13,47 +13,102 @@ const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
 };
 
-export const register = async (req, res) => {
+export const sendOtp = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { email, username } = req.body;
+
+    if (!email || !username) {
+      return res.status(400).send({ error: 'Email and Username are required' });
+    }
 
     const existingUser = await User.findOne({
       $or: [{ email }, { username }]
     });
 
     if (existingUser) {
-      if (existingUser.isVerified !== false) {
-        return res.status(400).send({ error: 'Username or email already exists' });
-      }
-
-      // If they are unverified, we delete the unverified user to create a fresh one.
-      const usernameTaken = await User.findOne({ username, email: { $ne: email }, isVerified: { $ne: false } });
-      if (usernameTaken) {
-        return res.status(400).send({ error: 'Username already taken' });
-      }
-      
-      await User.deleteOne({ _id: existingUser._id });
+      return res.status(400).send({ error: 'Username or email already exists' });
     }
+
+    // Generate 6-digit numeric OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Save or update the OTP in the database (with upsert)
+    await Otp.findOneAndUpdate(
+      { email },
+      { otp, createdAt: new Date() },
+      { upsert: true, new: true }
+    );
+
+    const mailResult = await sendOtpEmail(email, otp);
+
+    const response = { message: 'OTP sent successfully to your email.' };
+    
+    // If SMTP is not set up, or email fails, expose it for dev/local testing
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS || !mailResult.success) {
+      response.devOtp = otp;
+    }
+
+    res.status(200).send(response);
+  } catch (error) {
+    console.error('Error in sendOtp:', error);
+    res.status(500).send({ error: error.message });
+  }
+};
+
+export const register = async (req, res) => {
+  try {
+    const { username, email, password, otp } = req.body;
+
+    if (!otp) {
+      return res.status(400).send({ error: 'OTP is required' });
+    }
+
+    const existingUser = await User.findOne({
+      $or: [{ email }, { username }]
+    });
+
+    if (existingUser) {
+      return res.status(400).send({ error: 'Username or email already exists' });
+    }
+
+    // Verify OTP
+    const otpRecord = await Otp.findOne({ email });
+    if (!otpRecord) {
+      return res.status(400).send({ error: 'OTP expired or not found. Please request a new code.' });
+    }
+
+    if (otpRecord.otp !== otp) {
+      return res.status(400).send({ error: 'Invalid OTP. Please check the code and try again.' });
+    }
+
+    // OTP is valid! Delete the record
+    await Otp.deleteOne({ email });
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
       username,
       email,
-      password: hashedPassword,
-      isVerified: false
+      password: hashedPassword
     });
 
     await user.save();
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    await Otp.deleteMany({ email, type: 'register' });
-    await Otp.create({ email, otp, type: 'register' });
-    await sendOtpEmail(email, otp);
+    const token = generateToken(user._id);
 
     res.status(201).send({
-      message: 'Verification OTP sent to email',
-      email
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        bio: user.bio,
+        avatar: user.avatar,
+        role: user.role,
+        isBanned: user.isBanned,
+        followers: user.followers || [],
+        following: user.following || []
+      },
+      token
     });
 
   } catch (error) {
@@ -71,18 +126,6 @@ export const login = async (req, res) => {
 
     if (!user) {
       return res.status(400).send({ error: 'Invalid credentials' });
-    }
-
-    if (user.isVerified === false) {
-      const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      await Otp.deleteMany({ email: user.email, type: 'register' });
-      await Otp.create({ email: user.email, otp, type: 'register' });
-      await sendOtpEmail(user.email, otp);
-      return res.status(401).send({ 
-        error: 'Email not verified. A verification OTP has been sent to your email.', 
-        unverified: true, 
-        email: user.email 
-      });
     }
 
     if (user.email === 'archie220003@gmail.com' && user.role !== 'admin') {
@@ -203,140 +246,5 @@ export const updateProfile = async (req, res) => {
     res.status(500).send({
       error: error?.message || "UNKNOWN_ERROR"
     });
-  }
-};
-
-export const verifyOtp = async (req, res) => {
-  try {
-    const { email, otp, type } = req.body;
-
-    if (!email || !otp || !type) {
-      return res.status(400).send({ error: 'Email, OTP and type are required' });
-    }
-
-    const otpRecord = await Otp.findOne({ email, otp, type }).sort({ createdAt: -1 });
-
-    if (!otpRecord) {
-      return res.status(400).send({ error: 'Invalid or expired OTP' });
-    }
-
-    await Otp.deleteMany({ email, type });
-
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).send({ error: 'User not found' });
-    }
-
-    if (type === 'register') {
-      user.isVerified = true;
-      await user.save();
-    }
-
-    if (user.isBanned) {
-      return res.status(403).send({ error: 'Account has been banned' });
-    }
-
-    const token = generateToken(user._id);
-
-    res.send({
-      user: {
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        bio: user.bio,
-        avatar: user.avatar,
-        role: user.role,
-        isBanned: user.isBanned,
-        followers: user.followers || [],
-        following: user.following || []
-      },
-      token
-    });
-
-  } catch (error) {
-    console.error("FULL ERROR (verifyOtp):", error);
-    res.status(500).send({ error: error.message });
-  }
-};
-
-export const sendLoginOtp = async (req, res) => {
-  try {
-    const { email } = req.body;
-
-    if (!email) {
-      return res.status(400).send({ error: 'Email is required' });
-    }
-
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).send({ error: 'No account found with this email. Please register first.' });
-    }
-
-    if (user.isBanned) {
-      return res.status(403).send({ error: 'Account has been banned' });
-    }
-
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    if (user.isVerified === false) {
-      await Otp.deleteMany({ email, type: 'register' });
-      await Otp.create({ email, otp, type: 'register' });
-      await sendOtpEmail(email, otp);
-      return res.send({
-        message: 'Account not verified. A verification OTP has been sent to your email.',
-        email,
-        type: 'register'
-      });
-    }
-
-    await Otp.deleteMany({ email, type: 'login' });
-    await Otp.create({ email, otp, type: 'login' });
-    await sendOtpEmail(email, otp);
-
-    res.send({
-      message: 'Login OTP sent to your email.',
-      email,
-      type: 'login'
-    });
-
-  } catch (error) {
-    console.error("FULL ERROR (sendLoginOtp):", error);
-    res.status(500).send({ error: error.message });
-  }
-};
-
-export const resendOtp = async (req, res) => {
-  try {
-    const { email, type } = req.body;
-
-    if (!email || !type) {
-      return res.status(400).send({ error: 'Email and type are required' });
-    }
-
-    if (!['register', 'login'].includes(type)) {
-      return res.status(400).send({ error: 'Invalid OTP type' });
-    }
-
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).send({ error: 'No account found with this email.' });
-    }
-
-    if (user.isBanned) {
-      return res.status(403).send({ error: 'Account has been banned' });
-    }
-
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    await Otp.deleteMany({ email, type });
-    await Otp.create({ email, otp, type });
-    await sendOtpEmail(email, otp);
-
-    res.send({ message: `OTP resent to ${email}`, email, type });
-
-  } catch (error) {
-    console.error("FULL ERROR (resendOtp):", error);
-    res.status(500).send({ error: error.message });
   }
 };

@@ -1,58 +1,50 @@
 import nodemailer from 'nodemailer';
 
 export const sendOtpEmail = async (email, otp) => {
-  // If SMTP configuration is missing, print the OTP to the console.
-  // This is a robust fallback for development environment without SMTP keys.
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.log(`\n========================================`);
-    console.log(`[SMTP Not Configured]`);
-    console.log(`OTP sent to: ${email}`);
-    console.log(`OTP code:    ${otp}`);
-    console.log(`========================================\n`);
-    return true;
+  console.log(`[OTP DEBUG] OTP for ${email}: ${otp}`);
+
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+  const host = process.env.SMTP_HOST || 'smtp.gmail.com';
+  const port = parseInt(process.env.SMTP_PORT || '587');
+
+  if (!user || !pass) {
+    console.log(`[SMTP CONFIG] Missing SMTP credentials in .env. Falling back to log-only.`);
+    return { success: false, mode: 'log', otp };
   }
 
-  const transporter = nodemailer.createTransport({
-    service: process.env.SMTP_SERVICE || 'gmail',
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: process.env.SMTP_SECURE === 'true', // true for port 465, false for other ports
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
-    }
-  });
-
-  const mailOptions = {
-    from: `"Socialoop" <${process.env.SMTP_USER}>`,
-    to: email,
-    subject: 'Socialoop - Your One-Time Password (OTP)',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 12px; background-color: #ffffff;">
-        <h2 style="color: #0071e3; text-align: center; margin-bottom: 24px;">Socialoop Verification</h2>
-        <p style="font-size: 16px; color: #333333; line-height: 1.5;">Hello,</p>
-        <p style="font-size: 16px; color: #333333; line-height: 1.5;">Thank you for choosing Socialoop. Use the following One-Time Password (OTP) to complete your verification. This OTP is valid for 10 minutes:</p>
-        <div style="text-align: center; margin: 32px 0;">
-          <span style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #0071e3; background-color: #f5f5f7; padding: 12px 24px; border-radius: 8px; border: 1px dashed #0071e3; display: inline-block;">${otp}</span>
-        </div>
-        <p style="font-size: 14px; color: #86868b; line-height: 1.5; text-align: center;">If you did not request this verification, please ignore this email.</p>
-        <hr style="border: 0; border-top: 1px solid #e0e0e0; margin: 24px 0;" />
-        <p style="font-size: 12px; color: #86868b; text-align: center;">&copy; ${new Date().getFullYear()} Socialoop. All rights reserved.</p>
-      </div>
-    `
-  };
-
   try {
-    await transporter.sendMail(mailOptions);
-    return true;
+    const transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure: port === 465,
+      auth: { user, pass }
+    });
+
+    const mailOptions = {
+      from: `"Socialoop" <${user}>`,
+      to: email,
+      subject: 'Socialoop - Verify your email',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 12px; background-color: #ffffff;">
+          <h2 style="color: #0071e3; text-align: center;">Socialoop Email Verification</h2>
+          <p>Hello,</p>
+          <p>Thank you for signing up for Socialoop! To complete your registration, please verify your email address by entering the following One-Time Password (OTP) in the signup form:</p>
+          <div style="font-size: 32px; font-weight: bold; letter-spacing: 5px; text-align: center; margin: 30px 0; color: #1d1d1f; padding: 15px; background-color: #f5f5f7; border-radius: 8px;">
+            ${otp}
+          </div>
+          <p style="color: #86868b; font-size: 14px;">This OTP is valid for 5 minutes. If you did not request this code, you can safely ignore this email.</p>
+          <hr style="border: 0; border-top: 1px solid #e3e3e7; margin: 20px 0;" />
+          <p style="font-size: 12px; color: #86868b; text-align: center;">Socialoop Team</p>
+        </div>
+      `
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`[SMTP] Email sent successfully: ${info.messageId}`);
+    return { success: true, mode: 'smtp', messageId: info.messageId };
   } catch (error) {
-    console.error('Error sending SMTP email:', error);
-    // If SMTP fails, print to console as a fallback in dev
-    console.log(`\n========================================`);
-    console.log(`[SMTP Failed - Fallback Console Output]`);
-    console.log(`OTP sent to: ${email}`);
-    console.log(`OTP code:    ${otp}`);
-    console.log(`========================================\n`);
-    return false;
+    console.error(`[SMTP ERROR] Failed to send email to ${email}:`, error);
+    return { success: false, mode: 'error', error: error.message, otp };
   }
 };
